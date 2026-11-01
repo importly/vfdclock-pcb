@@ -7,7 +7,7 @@ A 131 × 66 mm backpack for the Noritake GU256X128C-3900, on the display's own f
 - Board: JLCPCB 2-layer, 1.6 mm, GND poured on both layers and stitched at 6 mm.
 - `npx pcbjs check`: DRC 0, ERC 0, all 36 automatic routes placed from a cold cache. `npx pcbjs build -q`: ORDERABLE.
 - Fab set: `.pcbjs/fab/vfdclock-carrier/` (zip, Gerbers, drills, `bom.csv`, `cpl.csv`). Shots: `.pcbjs/shots/`.
-- Online preview: https://importly.github.io/vfdclock-pcb/ (see Online preview below).
+- Online preview: https://aryanthakur.com/vfdclock-pcb/ (importly.github.io/vfdclock-pcb redirects there; see Online preview below).
 - The `wroom` branch holds the next revision, with a bare ESP32-S3-WROOM-1 module instead of the devkit.
 
 ## Layout (top view = the clock's back)
@@ -126,10 +126,9 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 
 ## Online preview
 
-Every push to `master` runs `.github/workflows/pages.yml`, which builds the pcbjs viewer and publishes it to https://importly.github.io/vfdclock-pcb/. The site has the 2D layout, the schematic, the 3D view with the reference boards, and the DRC/ERC findings. Clicking an item opens its source line on GitHub, and the board page has a download for the fab zip.
+Every push to `master` runs `.github/workflows/pages.yml`, which builds the pcbjs viewer and publishes it to https://aryanthakur.com/vfdclock-pcb/. The site has the 2D layout, the schematic, the 3D view with the reference boards, and the DRC/ERC findings. Clicking an item opens its source line on GitHub, and the board page has a download for the fab zip.
 
-- **One-time setup:** in the repo, Settings → Pages → Build and deployment → Source: **GitHub Actions**.
-- **Branch rule:** Settings → Environments → `github-pages` must allow `master`.
+- **Setup:** done. Settings → Pages → Source is set to **GitHub Actions**, and `github-pages` deploys from `master`.
 - **Local copy:** `npm run build && npm run preview` serves the same site under `/vfdclock-pcb/`.
 
 `footprints/` holds copies of the KiCad footprints the board uses, so it builds on a machine without KiCad, such as the GitHub runner. pcbjs downloads their 3D models from KiCad's library when no KiCad is installed.
