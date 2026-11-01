@@ -14,7 +14,7 @@ import {
   TP1, TP2, TP3, TP4, U1, U2, U3, U4, V5,
 } from './pcb.sch'
 import {
-  ANTENNA_KEEPOUT, BOARD_H, BOARD_W, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, DEVKIT_GAP,
+  ANTENNA_KEEPOUT, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, DEVKIT_GAP,
   DEVKIT_TAIL, HOLES, IDC_PITCH, J2_AT, NOTCH, ROW_J1_Y, ROW_J3_Y, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL,
   VFD_THICKNESS, pinX,
 } from './lib/frame'
@@ -79,12 +79,12 @@ const ROW_LEN = pinX(1) - pinX(22) + 2
 /**
  * An Adafruit breakout's board, as Adafruit's own model, on its header: the same frame as the header row
  * (pin 1 at the origin, pins down +y). The model's frame is the Eagle board's (header pin 1 at
- * (7.62, 2.54), the board running +y away from the header), so it turns -90 and sits on the 2.54 mm
- * header plastic.
+ * (7.62, 2.54), the board running +y away from the header), so it turns -90 and lies flush on the
+ * carrier (BREAKOUT_GAP).
  */
 function BreakoutBody({ children, file, w, h, ...rest }: FootprintProps & { file: string; w: number; h: number }) {
   return (
-    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, 2.54] }} {...rest}>
+    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, BREAKOUT_GAP] }} {...rest}>
       <rect layer="F.Fab" x={-2.54} y={-7.62} w={h} h={w} />
       {children}
     </footprint>
@@ -220,6 +220,9 @@ export default (
     {/* keep-outs: antenna (no copper on either layer; no parts placed there), standoffs */}
     {keepout('all', `M ${ANTENNA_KEEPOUT.x0} ${ANTENNA_KEEPOUT.y0} H ${ANTENNA_KEEPOUT.x1} V ${ANTENNA_KEEPOUT.y1} H ${ANTENNA_KEEPOUT.x0} Z`)}
     {HOLES.map(([x, y]) => keepout('all', circle(STANDOFF_CLEAR_D, x, y)))}
+    {/* no vias under the flush-mounted breakouts: their undersides sit on the carrier's solder mask */}
+    {keepout('all', 'M 32.38 47.72 H 57.78 V 65.5 H 32.38 Z', { tracks: false, pours: false })}
+    {keepout('all', 'M 76.0 42.64 H 101.4 V 65.5 H 76.0 Z', { tracks: false, pours: false })}
 
     {/* the stack: devkit and breakouts above on their own header plastic, VFD 15 mm below on M3 standoffs */}
     {reference('./refs/devkit/pcb.tsx', {
