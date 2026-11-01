@@ -70,11 +70,11 @@ const DIP20_245 = kicadFootprint('Package_DIP:DIP-20_W7.62mm', {
 export const J1 = BarrelJack10811('DC jack 5.5/2.1').source({ MPN: '10811', Manufacturer: 'SparkFun', Description: 'DC barrel jack 5.5x2.1 mm, right angle THT (4UCON 18742), owned' }).connect({ 1: V5, 2: GND, 3: GND })
 /** Bulk 1000 uF at the VFD connector: the VFD's switch-on surge. Owned, THT radial D10 P5, 17.5 mm tall. */
 export const C1 = CapRadial('1000u 16V').source({ MPN: '16YXJ1000MT810X16', Manufacturer: 'Rubycon', Description: 'Al electrolytic 1000 uF 16 V radial D10 x 16 P5.0, owned' }).connect({ 1: V5, 2: GND })
-export const C2 = C0805('10u').source({ MPN: 'CL21A106KAYNNNE' }).connect(V5, GND)
-export const R1 = R0805('1k').source({ MPN: '0805W8F1001T5E' }).connect(V5, LED_A)
-export const D1 = LED0805('green').source({ MPN: 'KT-0805G' }).connect({ A: LED_A, K: GND })
+export const C2 = C0805('10u').source({ MPN: 'CL21A106KAYNNNE', 'MPN:LCSC': 'C15850' }).connect(V5, GND)
+export const R1 = R0805('1k').source({ MPN: '0805W8F1001T5E', 'MPN:LCSC': 'C17513' }).connect(V5, LED_A)
+export const D1 = LED0805('green').source({ MPN: 'KT-0805G', 'MPN:LCSC': 'C2297' }).connect({ A: LED_A, K: GND })
 /** Keeps the devkit's USB 5 V from back-feeding the VFD supply. */
-export const D2 = SOD123('B5819W').source({ MPN: 'B5819W' }).connect({ A: V5, K: V5_ESP })
+export const D2 = SOD123('B5819W').source({ MPN: 'B5819W', 'MPN:LCSC': 'C8598' }).connect({ A: V5, K: V5_ESP })
 
 // ---------------------------------------------------------------- level shifters, owned DIPs
 // U1 carries D0..D7: channel n carries bit 8-n (A1/B1 = D7 ... A8/B8 = D0), so both rows keep the
@@ -94,10 +94,11 @@ export const C3 = CapDisc('100n').source({ MPN: 'owned 100nF disc P5', Descripti
 export const C4 = CapDisc('100n').source({ MPN: 'owned 100nF disc P5', Description: 'ceramic disc 0.1 uF P5.0, owned' }).connect(V5, GND)
 
 // ---------------------------------------------------------------- RDY readback
-// VFD RDY is open collector with 47 k to 5 V inside the module. 10 k to 3V3 and 39 k to GND
-// hold the node at about 2.97 V high (2.9 to 3.1 V worst case, V_IH 2.475 V) and 0.2 V low.
-export const R_RDY1 = R0805('10k').ref('R_RDY1').source({ MPN: '0805W8F1002T5E' }).connect(RDY, V3V3)
-export const R_RDY2 = R0805('39k').ref('R_RDY2').source({ MPN: '0805W8F3902T5E' }).connect(RDY, GND)
+// VFD RDY is open collector with 47 k to 5 V inside the module. 10 k to 3V3 and 47 k to GND
+// hold the node at about 3.06 V high (3.0 to 3.13 V worst case: above V_IH 2.475 V, below 3V3)
+// and 0.2 V low. 47 k rather than 39 k: a JLCPCB basic part.
+export const R_RDY1 = R0805('10k').ref('R_RDY1').source({ MPN: '0805W8F1002T5E', 'MPN:LCSC': 'C17414' }).connect(RDY, V3V3)
+export const R_RDY2 = R0805('47k').ref('R_RDY2').source({ MPN: '0805W8F4702T5E', 'MPN:LCSC': 'C17713' }).connect(RDY, GND)
 
 // ---------------------------------------------------------------- connectors
 /** To VFD CN4 by a straight 16-way IDC ribbon (female-female), pin 1 to pin 1. */

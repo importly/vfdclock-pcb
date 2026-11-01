@@ -71,7 +71,7 @@ U1's channel n carries bit 8−n (A1/B1 = D7 … A8/B8 = D0). This keeps the dev
   - C2: 10 µF 0805.
   - C3 and C4: 100 nF radials (Vishay K104K15X7RF5TL2), one at each DIP's pin 20.
 - **Devkit supply:** D2 (B5819W) feeds +5 V to the devkit's 5V pin, so its USB can't back-feed the VFD supply. The devkit's 3V3 powers the sensors, J8 and the RDY divider.
-- **RDY readback:** RDY is open-collector with 47 kΩ to 5 V inside the VFD. R_RDY1 (10 kΩ to 3V3) and R_RDY2 (39 kΩ to GND) give about 2.97 V high (V_IH 2.475 V) and 0.2 V low.
+- **RDY readback:** RDY is open-collector with 47 kΩ to 5 V inside the VFD. R_RDY1 (10 kΩ to 3V3) and R_RDY2 (47 kΩ to GND) give about 3.06 V high (3.0–3.13 V worst case; V_IH 2.475 V, never above 3V3) and 0.2 V low.
 
 ## BOM
 
@@ -90,14 +90,14 @@ The rule: parts already owned stay through-hole; everything bought new is SMD. "
 | J8 | 1 | 1 × 8 2.54 mm male header, right-angle | to buy (THT) |
 | C2 | 1 | 10 µF 0805, CL21A106KAYNNNE | to buy (SMD) |
 | R1 | 1 | 1 kΩ 0805 | to buy (SMD) |
-| R_RDY1, R_RDY2 | 2 | 10 kΩ and 39 kΩ 0805 | to buy (SMD) |
+| R_RDY1, R_RDY2 | 2 | 10 kΩ and 47 kΩ 0805 | to buy (SMD) |
 | D1 | 1 | green LED 0805 | to buy (SMD) |
 | D2 | 1 | B5819W Schottky, SOD-123 | to buy (SMD) |
 | — | 2 | Ribbon cable: 2 × AWP 16-7540-T IDC sockets (HHKC16S-ND), 2 × AWZ-16-T strain reliefs (HSSR16-ND), 16-way 1.27 mm grey flat ribbon AWG28-16/G/300, 5–8 cm | owned |
 | — | 1 | 5 V 15 W wall adapter, 5.5/2.1 plug (839-16-00119-ND) | owned |
 | — | 4 | M3 standoffs, 15 mm, with screws | to buy |
 
-The devkit and sensor rows are bare plated holes, so they are left out of `bom.csv` and `cpl.csv`. No LCSC numbers are entered.
+The devkit and sensor rows are bare plated holes, so they are left out of `bom.csv` and `cpl.csv`. The SMD parts carry LCSC numbers, checked against JLCPCB's parts list, all JLCPCB basic parts: C2 C15850, R1 C17513, D1 C2297, D2 C8598, R_RDY1 C17414, R_RDY2 C17713. J2 has none: hand-solder it, as it has 2.54 mm pads.
 
 Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's resistors are SMD, by choice), two spare 245s, the second 1000 µF can, ten spare 100 nF caps, and the breadboard parts from the earlier rig.
 
