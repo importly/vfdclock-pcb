@@ -4,6 +4,7 @@
 // Round 1.3 mm holes as SparkFun's footprint, which take the 1.6 x 1.0 flat pins.
 // Frame: origin at the body centre, the mouth facing +x; the front face is 13.6 mm from pad 1 (centre pin).
 import { defineFootprint, type FootprintProps } from '@pcbjs/core'
+import { kicadModel } from '@pcbjs/kicad'
 
 const LEN = 14.5
 const HALF_W = 4.5
@@ -19,7 +20,9 @@ const DRILL = 1.3
 function BarrelJack10811Footprint({ children, ...rest }: FootprintProps) {
   return (
     <footprint id="vfdclock:BarrelJack_SparkFun_PRT-10811" value="DC jack 5.5/2.1" height={HEIGHT}
-      model={{ kind: 'ic', w: LEN, h: 2 * HALF_W, height: HEIGHT, color: '#1c1c1c' }} {...rest}>
+      // KiCad's BarrelJack_Horizontal: the same jack body, pins 6.0 / 3.0 x 4.7 against 5.8 / 3.0 x 4.8 here.
+      // Its origin is the centre pin with the mouth at -x, so it turns 180 deg about pad 1.
+      model={{ file: kicadModel('${KICAD10_3DMODEL_DIR}/Connector_BarrelJack.3dshapes/BarrelJack_Horizontal.step'), rotate: [0, 0, 180], offset: [P1, 0, 0] }} {...rest}>
       {/* 1: centre pin (+), 2: sleeve (tip spring), 3: switch, closed to 2 with no plug */}
       <pad num="1" at={`${P1} 0`} shape="rect" size={PAD} drill={DRILL} />
       <pad num="2" at={`${JACK_FRONT - 7.8} 0`} shape="circle" size={PAD} drill={DRILL} />

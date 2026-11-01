@@ -1,8 +1,10 @@
 // Single rows of plated holes for boards that are soldered straight onto the carrier by their own
 // male header pins: the ESP32-S3-DevKitC-1 (two 1x22 rows) and the Adafruit sensor breakouts (1x5).
-// Nothing to order for these rows, so they are left out of the BOM and the placement file.
+// The boards come with their headers, so these rows are left out of the BOM and the placement file.
+// The 3D view shows the header itself, KiCad's vertical male header, plastic on the carrier.
 // Frame: pin 1 at the origin, pins down +y, as PinHeader.
 import { defineFootprint, type FootprintProps } from '@pcbjs/core'
+import { kicadModel } from '@pcbjs/kicad'
 import { DEVKIT_PINS, DEVKIT_PITCH } from './frame'
 
 const PAD = 1.7
@@ -16,7 +18,7 @@ function rowFootprint(id: string, value: string, pins: number) {
     }
     const len = (pins - 1) * DEVKIT_PITCH
     return (
-      <footprint id={id} value={value} bom={false} pos={false} height={0} {...rest}>
+      <footprint id={id} value={value} bom={false} pos={false} model={{ file: kicadModel(`${'${KICAD10_3DMODEL_DIR}'}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x${String(pins).padStart(2, '0')}_P2.54mm_Vertical.step`) }} height={0} {...rest}>
         {pads}
         <rect layer="F.Fab" x={-1.27} y={-1.27} w={2.54} h={len + 2.54} />
         <rect layer="F.CrtYd" x={-1.3} y={-1.3} w={2.6} h={len + 2.6} />

@@ -14,12 +14,14 @@ import {
   TP1, TP2, TP3, TP4, U1, U2, U3, U4, V5,
 } from './pcb.sch'
 import {
-  ANTENNA_KEEPOUT, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, DEVKIT_GAP,
+  ANTENNA_KEEPOUT, BOARD_H, BOARD_W, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, DEVKIT_GAP,
   DEVKIT_TAIL, HOLES, IDC_PITCH, J2_AT, NOTCH, ROW_J1_Y, ROW_J3_Y, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL,
   VFD_THICKNESS, pinX,
 } from './lib/frame'
 import { DEVKIT_NET_OF } from './lib/pinout'
 import { JACK_FRONT } from './lib/barrelJack'
+import { DEVKIT_VISUAL } from './lib/devkitVisual'
+import { VFD_VISUAL } from './lib/vfdVisual'
 
 // ---------------------------------------------------------------- outline: VFD size, CN4 notch open to the right edge
 const N = NOTCH
@@ -74,6 +76,20 @@ function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: 
 }
 const ROW_CX = (pinX(1) + pinX(22)) / 2
 const ROW_LEN = pinX(1) - pinX(22) + 2
+/**
+ * An Adafruit breakout's board, as Adafruit's own model, on its header: the same frame as the header row
+ * (pin 1 at the origin, pins down +y). The model's frame is the Eagle board's (header pin 1 at
+ * (7.62, 2.54), the board running +y away from the header), so it turns -90 and sits on the 2.54 mm
+ * header plastic.
+ */
+function BreakoutBody({ children, file, w, h, ...rest }: FootprintProps & { file: string; w: number; h: number }) {
+  return (
+    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, 2.54] }} {...rest}>
+      <rect layer="F.Fab" x={-2.54} y={-7.62} w={h} h={w} />
+      {children}
+    </footprint>
+  )
+}
 // [x, y, w, h, height]: header pins and leads below the carrier, checked against the VFD's rear parts.
 const TAILS: [number, number, number, number, number][] = [
   [ROW_CX, ROW_J1_Y, ROW_LEN, 2, DEVKIT_TAIL],
@@ -86,7 +102,6 @@ const TAILS: [number, number, number, number, number][] = [
 // J8 labels, left to right in the top view (pad 8 at the left, pad 1 at the right).
 const J8_LABELS = ['21', '18', '17', '16', '15', '14', 'G', '3V3']
 const J8_X0 = J8_P1X - 7 * 2.54
-const breakoutNets = (n: string) => (n === '3V3' ? 'VIN' : n)
 
 export default (
   <PCB
@@ -122,6 +137,8 @@ export default (
     {/* ---------------------------------------------------------------- sensors and expansion */}
     <U3 at={`${U3_P1[0]} ${U3_P1[1]} 90deg`} />
     <U4 at={`${U4_P1[0]} ${U4_P1[1]} 90deg`} />
+    <BreakoutBody ref="X6" value="Adafruit 4829 SGP40" file="./models/adafruit-4829-sgp40.step" w={25.4} h={17.78} at={`${U3_P1[0]} ${U3_P1[1]} 90deg`} />
+    <BreakoutBody ref="X7" value="Adafruit 5190 SCD-41" file="./models/adafruit-5187-scd4x.step" w={25.4} h={22.86} at={`${U4_P1[0]} ${U4_P1[1]} 90deg`} />
     <J8 at={`${J8_P1X} ${HDR_Y} 270deg`} height={RA_HEADER_H} />
 
     {/* ---------------------------------------------------------------- power corner */}
@@ -212,10 +229,12 @@ export default (
       ],
       stack: 'above',
       gap: DEVKIT_GAP,
+      show: { bodies: false, opacity: 0 },
     })}
-    {reference('./refs/sgp40/pcb.tsx', { mate: { local: U3, remote: 'J1', pin: 1, nets: breakoutNets }, stack: 'above', gap: BREAKOUT_GAP })}
-    {reference('./refs/scd41/pcb.tsx', { mate: { local: U4, remote: 'J1', pin: 1, nets: breakoutNets }, stack: 'above', gap: BREAKOUT_GAP })}
-    {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)] })}
+    {/* the references check the fit; lib/devkitVisual and lib/vfdVisual draw both boards in their own colours */}
+    {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)], show: { bodies: false, opacity: 0 } })}
+    {DEVKIT_VISUAL}
+    {VFD_VISUAL}
 
     {/* ---------------------------------------------------------------- silk: polarity, pin 1 and pin names only */}
     <circle layer={SILK} cx={C1_C[0]} cy={C1_C[1]} r={5.15} />

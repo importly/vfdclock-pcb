@@ -119,10 +119,17 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 
 ## The stack and its checks
 
-- `refs/devkit`, `refs/sgp40` and `refs/scd41` mate on their headers (stack above, 2.5 mm), with the nets checked across each mate.
-- `refs/vfd` sits 16.6 mm below.
-- The sensor geometry comes from Adafruit's own Eagle boards (`Adafruit-SGP40-PCB`, `Adafruit-SCD-4x-PCB`).
+- `refs/devkit` mates on the devkit's header rows (stack above, 2.5 mm), with the nets checked across the mate.
+- `refs/vfd` sits 16.6 mm below. Its rear-part positions are measured from the owner's photos (`lib/frame.ts`).
 - Under the carrier, every solder tail is modelled and checked against the display's rear parts. The display's tall parts are each grown by ±2 mm photo tolerance plus 1.5 mm clearance.
+
+**3D view:**
+- **Sensor boards:** Adafruit's own models (Adafruit_CAD_Parts, MIT), on KiCad header models; the sensor geometry comes from Adafruit's Eagle boards.
+- **Barrel jack:** KiCad's model of the same jack body.
+- **Why stand-ins:** the viewer tints a reference board's parts. So the devkit (`lib/devkitVisual.tsx`) and the display (`lib/vfdVisual.tsx`) are drawn as model-only footprints on the carrier, in their own colours.
+  - **The devkit:** a black board plus KiCad models of its module, USB-C ports, regulator, USB-serial chip, buttons and RGB LED, placed from a photo of the owner's board.
+  - **The display:** a green board, glass and dot area, plus KiCad models of the parts its rear photo shows.
+  - The references still do the checks; their own drawing is hidden.
 
 ## Online preview
 
