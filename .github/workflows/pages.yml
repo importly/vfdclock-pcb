@@ -1,0 +1,65 @@
+# Builds the pcbjs viewer site (`pcbjs build` -> .pcbjs/dist) and publishes it to GitHub Pages:
+# https://importly.github.io/vfdclock-pcb/
+# One-time setup: Settings -> Pages -> Build and deployment -> Source: GitHub Actions.
+# The site's URL path comes from `base` in pcb.config.ts; `pcbjs dev` ignores it and serves at "/".
+name: Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# One deployment at a time; a newer push replaces a queued run but never cancels one mid-deploy.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22 # @pcbjs/* need node >=22.12
+          cache: npm
+
+      - run: npm ci
+
+      # Converted 3D meshes and models pcbjs downloads on first use (.pcbjs/models/fetched).
+      - name: Cache pcbjs models
+        uses: actions/cache@v6
+        with:
+          path: .pcbjs/models
+          key: pcbjs-models-${{ github.sha }}
+          restore-keys: pcbjs-models-
+
+      - name: Build the viewer site
+        run: |
+          # build exits 1 when a board is not orderable (DRC/ERC findings) but still writes the site,
+          # so publish the preview anyway; fail only when a board did not compile.
+          npx pcbjs build --json .pcbjs/report.json || echo "::warning::pcbjs build exited $?; the board has DRC/ERC findings, publishing the preview anyway"
+          jq -e 'all(.boards[]; .status != "error")' .pcbjs/report.json
+          test -f .pcbjs/dist/index.html
+
+      - uses: actions/configure-pages@v6
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .pcbjs/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
