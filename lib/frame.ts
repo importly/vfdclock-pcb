@@ -53,12 +53,21 @@ const G = VFD_POS_TOL + VFD_CLEAR
 /** [x, y, w, h, height]: nominal centre and size, then the grown box is built from them. */
 const grown = (x: number, y: number, w: number, h: number, height: number) =>
   ({ x, y, w: w + 2 * G, h: h + 2 * G, height: height + VFD_CLEAR }) as const
+/** Rear part centres, measured from the owner's rear photo against the board edges (+-1.5 mm). */
+export const VFD_PARTS = {
+  C36: [48.7, 53.6], L1: [24.2, 40.1], L3: [43.3, 28.4], L2: [42.4, 8.8], SW1: [78.4, 51.5],
+  IC6: [77.9, 28.4], IC7: [94.7, 26.7], IC1: [14.3, 46.0], IC2: [16.9, 15.3], IC5: [65.3, 48.1],
+  IC9: [108.3, 16.0], IC10: [108.3, 23.3], IC12: [112.2, 31.3], X1: [63.6, 30.3],
+} as const
 /** Electrolytic C36, 8 mm across, 10 mm tall: only ~5 mm free above it. */
-export const VFD_C36 = grown(51.3, 54.3, 8.0, 8.0, 10.0)
-/** Two power inductors, 7 mm across, 5 mm tall. */
-export const VFD_INDUCTORS = [grown(27.4, 40.2, 7.0, 7.0, 5.0), grown(44.4, 31.3, 7.0, 7.0, 5.0)] as const
+export const VFD_C36 = grown(VFD_PARTS.C36[0], VFD_PARTS.C36[1], 8.0, 8.0, 10.0)
+/** Two power inductors, L1 and L3, 7 mm across, 5 mm tall. */
+export const VFD_INDUCTORS = [
+  grown(VFD_PARTS.L1[0], VFD_PARTS.L1[1], 7.0, 7.0, 5.0),
+  grown(VFD_PARTS.L3[0], VFD_PARTS.L3[1], 7.0, 7.0, 5.0),
+] as const
 /** SW1, the DIP switch (No.6 = ON), about 11 x 6 mm, 4 mm tall. */
-export const VFD_SW1 = grown(86.0, 56.6, 11.0, 6.0, 4.0)
+export const VFD_SW1 = grown(VFD_PARTS.SW1[0], VFD_PARTS.SW1[1], 11.0, 6.0, 4.0)
 /** CN1 JST-XH 7-pin housing, x about 4.4, y 36 to 57, 7 mm tall. */
 export const VFD_CN1 = grown(4.4, 46.5, 5.8, 21.0, 7.0)
 /** CN4 box header, x 121.7 to 130.2, y 9.3 to 37.2, 9 mm tall (the ribbon socket sits in it). */
@@ -75,8 +84,10 @@ export const VFD_REAR_3MM = [
 export const THT_TAIL = 2.0
 /** Header pin tails of the soldered-on breakouts, below the carrier (trim to this). */
 export const BREAKOUT_TAIL = 3.0
-/** Display glass on the VFD's front face (away from the carrier): glass front to PCB rear 12.9 mm. */
-export const VFD_GLASS = { w: 120.0, h: 60.0, height: 12.9 - 1.6 } as const
+/** Display glass on the VFD's front face (away from the carrier): glass front to PCB rear 12.9 mm.
+ * Outline and the 256 x 128 dot area (0.35 mm pitch) as the owner's front photo shows them. */
+export const VFD_GLASS = { x: 65.0, y: 33.3, w: 125.0, h: 62.5, height: 12.9 - 1.6 } as const
+export const VFD_DOTS = { x: 65.5, y: 33.5, w: 89.6, h: 44.8 } as const
 
 // ---------------------------------------------------------------- ESP32-S3-WROOM-1 on the carrier
 // The bare module (18 x 25.5, lib/esp32s3Wroom1.tsx) sits on the top edge with its antenna end up.

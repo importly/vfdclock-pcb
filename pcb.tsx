@@ -20,6 +20,7 @@ import {
 } from './lib/frame'
 import { GPIO, WROOM_PADS } from './lib/pinout'
 import { JACK_FRONT } from './lib/barrelJack'
+import { VFD_VISUAL } from './lib/vfdVisual'
 
 // ---------------------------------------------------------------- outline: VFD size, antenna notch at the top, CN4 notch at the right
 const N = NOTCH
@@ -291,7 +292,9 @@ export default (
     {HOLES.map(([x, y]) => keepout('all', circle(STANDOFF_CLEAR_D, x, y)))}
 
     {/* the stack: the VFD 15 mm below on M3 standoffs */}
-    {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)] })}
+    {/* refs/vfd checks the fit and draws the outline; lib/vfdVisual draws the display in its own colours */}
+    {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)], show: { bodies: false, opacity: 0 } })}
+    {VFD_VISUAL}
 
     {/* ---------------------------------------------------------------- silk: polarity, pin 1 and pin names only */}
     <circle layer={SILK} cx={C1_C[0]} cy={C1_C[1]} r={5.15} />
