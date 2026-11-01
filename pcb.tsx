@@ -15,7 +15,7 @@ import {
   RDY, SW1, SW2, TP1, TP2, TP3, TP4, TP5, TP6, TP7, U1, U2, U3, U4, U5, U6, U7, V5, VFD_WR,
 } from './pcb.sch'
 import {
-  ANT_NOTCH, BOARD_H, BOARD_W, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, HOLES, IDC_PITCH, J2_AT,
+  ANT_NOTCH, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, HOLES, IDC_PITCH, J2_AT,
   NOTCH, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL, VFD_THICKNESS, WROOM_AT,
 } from './lib/frame'
 import { GPIO, WROOM_PADS } from './lib/pinout'
@@ -90,12 +90,12 @@ function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: 
 /**
  * An Adafruit breakout's board, as Adafruit's own model, on its header: the same frame as the header row
  * (pin 1 at the origin, pins down +y). The model's frame is the Eagle board's (header pin 1 at
- * (7.62, 2.54), the board running +y away from the header), so it turns -90 and sits on the 2.54 mm
- * header plastic.
+ * (7.62, 2.54), the board running +y away from the header), so it turns -90 and lies flush on the
+ * carrier (BREAKOUT_GAP).
  */
 function BreakoutBody({ children, file, w, h, ...rest }: FootprintProps & { file: string; w: number; h: number }) {
   return (
-    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, 2.54] }} {...rest}>
+    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, BREAKOUT_GAP] }} {...rest}>
       <rect layer="F.Fab" x={-2.54} y={-7.62} w={h} h={w} />
       {children}
     </footprint>
@@ -290,6 +290,9 @@ export default (
     {pour(GND, 'B.Cu', `M 0 0 H ${BOARD_W} V ${BOARD_H} H 0 Z`)}
     {stitch(GND, { pitch: 6, padClearance: 0.5 })}
     {HOLES.map(([x, y]) => keepout('all', circle(STANDOFF_CLEAR_D, x, y)))}
+    {/* no vias under the flush-mounted breakouts: their undersides sit on the carrier's solder mask */}
+    {keepout('all', 'M 14.0 13.499999999999996 H 39.400000000000006 V 31.279999999999998 H 14.0 Z', { tracks: false, pours: false })}
+    {keepout('all', 'M 14.0 33.0 H 39.400000000000006 V 55.86 H 14.0 Z', { tracks: false, pours: false })}
 
     {/* the stack: the VFD 15 mm below on M3 standoffs */}
     {/* refs/vfd checks the fit and draws the outline; lib/vfdVisual draws the display in its own colours */}

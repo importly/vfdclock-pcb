@@ -105,8 +105,8 @@ The rule: parts already owned stay through-hole, and everything bought new is SM
 | C1 | 1 | Rubycon 16YXJ1000MT810X16, 1000 µF 16 V, D10 × 16, P5.0 (1189-1545-1-ND; 2 owned) |
 | C3, C4 | 2 | Vishay K104K15X7RF5TL2, 100 nF 50 V X7R radial, P5.0 (BC1084CT-ND; 12 owned) |
 | J1 | 1 | SparkFun PRT-10811 DC barrel jack 5.5/2.1, right angle (4UCON 18742; 1568-10811-ND) |
-| U3 | 1 | Adafruit 4829, SGP40, soldered by its own 1 × 5 header |
-| U4 | 1 | Adafruit 5190, SCD-41, soldered by its own 1 × 5 header |
+| U3 | 1 | Adafruit 4829, SGP40, soldered flush by its own 1 × 5 header |
+| U4 | 1 | Adafruit 5190, SCD-41, soldered flush by its own 1 × 5 header |
 | — | 2 | Ribbon cable: 2 × AWP 16-7540-T IDC sockets, 2 × AWZ-16-T strain reliefs, 16-way 1.27 mm flat ribbon, 5–8 cm |
 | — | 1 | 5 V 15 W wall adapter, 5.5/2.1 plug (839-16-00119-ND) |
 
@@ -144,7 +144,7 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
    - Solder the ground pad from the back, through the 1 mm hole in its centre.
 3. **J2:** SMD, but on 2.54 mm pads.
 4. **Low THT parts:** U1, U2, C3, C4, J8, J1.
-5. **The breakouts:** solder the 1 × 5 headers into the carrier with the plastic on top, set the breakout on the pins, and solder it. Trim the tails underneath to 3 mm.
+5. **The breakouts, flush on the carrier:** push each 1 × 5 header's long pins up through the carrier from underneath, so its black plastic sits under the carrier. Lay the breakout flat on top over the pins, solder the pins to the breakout on top and to the carrier underneath, then trim the pins on top. Nothing under a breakout has bare copper: the carrier's vias are tented and kept out from under it, and its tracks are under solder mask. Flush is harder to undo than on standoffs, and the SCD-41 reads the carrier's warmth a little more, so give its temperature an offset in firmware.
 6. **C1 last** (it is the tallest part); mind the + mark.
 
 ## Check before ordering

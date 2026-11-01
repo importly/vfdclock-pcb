@@ -82,8 +82,8 @@ export const VFD_REAR_3MM = [
 ].map(b => ({ ...b, height: 3.0 + VFD_CLEAR }))
 /** Solder tails of the carrier's top-side THT parts, below its underside. */
 export const THT_TAIL = 2.0
-/** Header pin tails of the soldered-on breakouts, below the carrier (trim to this). */
-export const BREAKOUT_TAIL = 3.0
+/** Under a flush-mounted breakout: the header's 2.54 mm plastic plus its 3 mm short pins, below the carrier. */
+export const BREAKOUT_TAIL = 5.6
 /** Display glass on the VFD's front face (away from the carrier): glass front to PCB rear 12.9 mm.
  * Outline and the 256 x 128 dot area (0.35 mm pitch) as the owner's front photo shows them. */
 export const VFD_GLASS = { x: 65.0, y: 33.3, w: 125.0, h: 62.5, height: 12.9 - 1.6 } as const
@@ -105,8 +105,12 @@ export const ANT_NOTCH = { x0: WROOM_AT[0] - 9.5, x1: WROOM_AT[0] + 9.5, depth: 
 export const BREAKOUT_LEN = 25.4
 export const BREAKOUT_HDR_EDGE = 2.54
 export const BREAKOUT_PIN1_ALONG = 7.62
-/** Header plastic: the breakout sits this far above the carrier. */
-export const BREAKOUT_GAP = 2.5
+/**
+ * The breakouts sit flush on the carrier: the header goes in from underneath, its plastic under the
+ * carrier and its long pins up through both boards. Nothing on the carrier under them has bare copper:
+ * vias are tented and kept out (pcb.tsx), tracks are under solder mask.
+ */
+export const BREAKOUT_GAP = 0
 /** Adafruit 4829, SGP40 VOC: 25.4 x 17.78. */
 export const SGP40_DEPTH = 17.78
 /** Adafruit 5190, SCD-41 CO2 / T / RH: 25.4 x 22.86. */

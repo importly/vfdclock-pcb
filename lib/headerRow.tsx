@@ -1,7 +1,8 @@
 // A single row of plated holes for a board soldered straight onto the carrier by its own male header
 // pins: the Adafruit sensor breakouts (1x5).
 // The breakouts come with their headers, so these rows are left out of the BOM and the placement file.
-// The 3D view shows the header itself, KiCad's 1x5 vertical male header, plastic on the carrier.
+// The 3D view shows the header itself, KiCad's vertical male header. The breakouts' headers go in
+// from underneath, so their plastic sits under the carrier and the boards lie flush on top.
 // Frame: pin 1 at the origin, pins down +y, as PinHeader.
 import { defineFootprint, type FootprintProps } from '@pcbjs/core'
 import { kicadModel } from '@pcbjs/kicad'
@@ -10,7 +11,8 @@ const PITCH = 2.54
 const PAD = 1.7
 const DRILL = 1.0
 
-function rowFootprint(id: string, value: string, pins: number) {
+/** z: the header model's base from the carrier's top face; a header fitted from underneath sits at -(1.6 + 2.54). */
+function rowFootprint(id: string, value: string, pins: number, z = 0) {
   function RowFootprint({ children, ...rest }: FootprintProps) {
     const pads = []
     for (let n = 1; n <= pins; n++) {
@@ -18,7 +20,7 @@ function rowFootprint(id: string, value: string, pins: number) {
     }
     const len = (pins - 1) * PITCH
     return (
-      <footprint id={id} value={value} bom={false} pos={false} model={{ file: kicadModel(`${'${KICAD10_3DMODEL_DIR}'}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x${String(pins).padStart(2, '0')}_P2.54mm_Vertical.step`) }} height={0} {...rest}>
+      <footprint id={id} value={value} bom={false} pos={false} model={{ file: kicadModel(`${'${KICAD10_3DMODEL_DIR}'}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x${String(pins).padStart(2, '0')}_P2.54mm_Vertical.step`), offset: [0, 0, z] }} height={0} {...rest}>
         {pads}
         <rect layer="F.Fab" x={-1.27} y={-1.27} w={2.54} h={len + 2.54} />
         <rect layer="F.CrtYd" x={-1.3} y={-1.3} w={2.6} h={len + 2.6} />
@@ -34,4 +36,4 @@ function rowFootprint(id: string, value: string, pins: number) {
 }
 
 /** The 1x5 header of an Adafruit STEMMA QT breakout: VIN, 3V, GND, SCL, SDA. */
-export const BreakoutRow = rowFootprint('vfdclock:BreakoutRow_1x05_P2.54mm', 'breakout row', 5)
+export const BreakoutRow = rowFootprint('vfdclock:BreakoutRow_1x05_P2.54mm', 'breakout row', 5, -(1.6 + 2.54))
