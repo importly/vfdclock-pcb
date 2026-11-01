@@ -18,7 +18,7 @@ function rowFootprint(id: string, value: string, pins: number) {
     }
     const len = (pins - 1) * PITCH
     return (
-      <footprint id={id} value={value} bom={false} pos={false} model={{ file: kicadModel(`${'${KICAD10_3DMODEL_DIR}'}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x0${pins}_P2.54mm_Vertical.step`) }} {...rest}>
+      <footprint id={id} value={value} bom={false} pos={false} model={{ file: kicadModel(`${'${KICAD10_3DMODEL_DIR}'}/Connector_PinHeader_2.54mm.3dshapes/PinHeader_1x${String(pins).padStart(2, '0')}_P2.54mm_Vertical.step`) }} height={0} {...rest}>
         {pads}
         <rect layer="F.Fab" x={-1.27} y={-1.27} w={2.54} h={len + 2.54} />
         <rect layer="F.CrtYd" x={-1.3} y={-1.3} w={2.6} h={len + 2.6} />

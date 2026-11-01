@@ -159,6 +159,11 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 
 - `refs/sgp40` and `refs/scd41` mate on their headers (stack above, 2.5 mm), with the nets checked across each mate. Their geometry comes from Adafruit's own Eagle boards (`Adafruit-SGP40-PCB`, `Adafruit-SCD-4x-PCB`).
 - `refs/vfd` sits 16.6 mm below. The breakout header tails and C1's leads under the carrier are modelled and checked against the display's rear parts.
+- **3D view:**
+  - **Sensor boards:** Adafruit's own models (Adafruit_CAD_Parts, MIT), on KiCad header models.
+  - **Barrel jack:** KiCad's model of the same jack body.
+  - **U6/U7:** LCSC's models.
+  - **The display (`lib/vfdVisual.tsx`):** model-only footprints on the carrier, in its own colours, because the viewer tints a reference board's parts. It is a green board, glass and dot area, plus KiCad models of the parts its rear photo shows. `refs/vfd` still does the checks; its own drawing is hidden.
 - The module footprint, `lib/esp32s3Wroom1.tsx`, keeps KiCad's pad centres. It has longer pads for hand soldering, and its ground-pad vias are replaced with a 1 mm hole and 0.4 mm vias, because KiCad's 0.2 mm drills are under JLCPCB's limit.
 
 ## Online preview
