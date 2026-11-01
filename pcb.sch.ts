@@ -69,6 +69,7 @@ const DIP20_245 = kicadFootprint('Package_DIP:DIP-20_W7.62mm', {
   pinNames: ['DIR', 'A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'GND', 'B8', 'B7', 'B6', 'B5', 'B4', 'B3', 'B2', 'B1', 'OE', 'VCC'],
 })
 // USBLC6-2SC6: I/O1 on pads 1 and 6, I/O2 on 3 and 4, a pass-through clamp for each USB line.
+// D- takes I/O1 and D+ I/O2, the order the lanes from the module arrive in.
 const USBLC6 = SOT23(6, { pinNames: ['IO1', 'GND', 'IO2', 'IO2', 'VBUS', 'IO1'] })
 const LDO = withPins(SOT223, ['GND', 'VOUT', 'VIN'])
 const Tact = TactSwitch('5.1x5.1')
@@ -126,7 +127,7 @@ export const R5 = R0805('5.1k').source({ MPN: '0805W8F5101T5E', 'MPN:LCSC': LCSC
 export const R6 = R0805('5.1k').source({ MPN: '0805W8F5101T5E', 'MPN:LCSC': LCSC.R5k1 }).connect(CC2, GND)
 /** ESD clamp on D+, D- and VBUS, at the connector. */
 export const U6 = USBLC6({ value: 'USBLC6-2SC6', model: { file: './models/SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.step' } }).source({ MPN: 'USBLC6-2SC6', Manufacturer: 'STMicroelectronics', 'MPN:LCSC': 'C7519' })
-  .connect({ IO1: USB_DP, IO2: USB_DN, GND, VBUS })
+  .connect({ IO1: USB_DN, IO2: USB_DP, GND, VBUS })
 
 // ---------------------------------------------------------------- power for the VFD
 /** 5.5/2.1 mm DC jack (SparkFun PRT-10811), centre positive; pin 3 is the sleeve switch, tied to GND. Owned; opening on the right edge. */

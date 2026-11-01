@@ -16,8 +16,8 @@ export const WROOM_PADS = [
  * with no crossings:
  * - the display bus fans straight down from ten bottom pads: /WR (pad 15), RDY (pad 17), then
  *   D0..D7 (pads 18-25), D7 at the right;
- * - down the left side: 3V3 and EN (pads 2, 3), the expansion header (pads 4-9), I2C (pads 10, 11),
- *   USB (pads 13, 14).
+ * - down the left side: 3V3 and EN (pads 2, 3), the expansion header (pads 4-9), I2C (pads 10, 11:
+ *   SCL above SDA, as the sensor headers want them), USB (pads 13, 14).
  * IO3 (/WR) and IO0 (BOOT) are strapping pins, harmless here: IO3 only selects the JTAG source when
  * an eFuse asks it to, and /WR is pulled high, inactive, while the chip boots.
  * The bus is not one run of GPIO numbers, so firmware writes it with a dedicated-GPIO bundle
@@ -29,8 +29,8 @@ export const GPIO = {
   RDY: 'IO9',
   D: ['IO10', 'IO11', 'IO12', 'IO13', 'IO14', 'IO21', 'IO47', 'IO48'],
   EXP: ['IO4', 'IO5', 'IO6', 'IO7', 'IO15', 'IO16'],
-  SDA: 'IO17',
-  SCL: 'IO18',
+  SCL: 'IO17',
+  SDA: 'IO18',
   USB_DN: 'IO19',
   USB_DP: 'IO20',
   BOOT: 'IO0',

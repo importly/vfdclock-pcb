@@ -33,7 +33,7 @@ The pins follow the module's pad order, so each group leaves the module on its o
 | RDY | IO9 | 17 | VFD pin 12 via the divider (see Power) |
 | D0–D4 | IO10–IO14 | 18–22 | U1 → VFD_D0–D4 |
 | D5, D6, D7 | IO21, IO47, IO48 | 23–25 | U1 → VFD_D5–D7 |
-| SDA, SCL | IO17, IO18 | 10, 11 | SGP40 and SCD-41; their own 10 kΩ pull-ups are the bus pull-ups |
+| SCL, SDA | IO17, IO18 | 10, 11 | SGP40 and SCD-41; their own 10 kΩ pull-ups are the bus pull-ups |
 | expansion | IO4, IO5, IO6, IO7, IO15, IO16 | 4–9 | J8 |
 | USB D−, D+ | IO19, IO20 | 13, 14 | U6 → J5 |
 | BOOT | IO0 | 27 | SW2 to GND |
