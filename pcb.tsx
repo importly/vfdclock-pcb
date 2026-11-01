@@ -43,7 +43,7 @@ const U2_P1: [number, number] = [99.0, 23.0]
 // The breakouts' header rows, pin 1 (VIN) at the left; each board stands up from its header.
 const U3_P1: [number, number] = [40.0, 62.96]
 const U4_P1: [number, number] = [83.62, 62.96]
-const HDR_Y = BOARD_H - 4.04 // right-angle header pad row: body to the edge, pins 6 mm past it
+const HDR_Y = BOARD_H - 10.45 // right-angle header pad row: pins point at the edge and end 0.4 mm inside it
 const J8_P1X = 27.78 // J8 pad 1 (3V3), pads run left
 const J2_PIN1_Y = J2_AT[1] - 3.5 * IDC_PITCH
 const j2y = (pin: number) => J2_PIN1_Y + Math.floor((pin - 1) / 2) * IDC_PITCH

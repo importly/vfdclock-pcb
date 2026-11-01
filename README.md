@@ -17,7 +17,7 @@ A 131 × 66 mm backpack for the Noritake GU256X128C-3900, on the display's own f
 | Left, mid-height | The devkit, soldered straight in by its own pins (no sockets), sitting 2.5 mm up on its header plastic. Both USB-C ports open out of the left edge. |
 | Middle | The antenna end of the devkit. It lands mid-board because the 63 mm devkit has its USB end at the left edge. Its area has no copper on either layer and no parts near it, and nothing metal sits above it behind a clear back. |
 | Above the devkit | U1 (D0–D7) with C3, D2 (devkit 5 V feed), the RDY divider and TP3. |
-| Below the devkit | The SGP40 breakout, and J8 (right-angle expansion header, pins out of the bottom edge). |
+| Below the devkit | The SGP40 breakout, and J8 (right-angle expansion header, its pins pointing at the bottom edge and ending 0.4 mm inside it). |
 | Right, middle | U2 (/WR buffer) with C4 and TP4. |
 | Bottom right | The SCD-41 breakout, away from the devkit's heat. |
 | Power corner | J2 to the display beside the CN4 notch, C1, C2, the barrel jack (opening on the right edge), the power LED, TP1 and TP2. |
