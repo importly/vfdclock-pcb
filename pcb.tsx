@@ -15,7 +15,7 @@ import {
   RDY, SW1, SW2, TP1, TP2, TP3, TP4, TP5, TP6, TP7, U1, U2, U3, U4, U5, U6, U7, V5, VFD_WR,
 } from './pcb.sch'
 import {
-  ANT_NOTCH, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, HOLES, IDC_PITCH, J2_AT,
+  ANT_NOTCH, BOARD_H, BOARD_W, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, HOLES, IDC_PITCH, J2_AT,
   NOTCH, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL, VFD_THICKNESS, WROOM_AT,
 } from './lib/frame'
 import { GPIO, WROOM_PADS } from './lib/pinout'
@@ -66,6 +66,20 @@ function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: 
   return (
     <footprint id="carrier:THT-tails" bom={false} pos={false} model={{ kind: 'ic', w, h, height: rest.height as number, color: '#9a9a9a' }} {...rest}>
       <rect layer="F.Fab" x={-w / 2} y={-h / 2} w={w} h={h} />
+      {children}
+    </footprint>
+  )
+}
+/**
+ * An Adafruit breakout's board, as Adafruit's own model, on its header: the same frame as the header row
+ * (pin 1 at the origin, pins down +y). The model's frame is the Eagle board's (header pin 1 at
+ * (7.62, 2.54), the board running +y away from the header), so it turns -90 and sits on the 2.54 mm
+ * header plastic.
+ */
+function BreakoutBody({ children, file, w, h, ...rest }: FootprintProps & { file: string; w: number; h: number }) {
+  return (
+    <footprint id="carrier:Adafruit-breakout" bom={false} pos={false} model={{ file, rotate: [0, 0, 90], offset: [-2.54, 7.62, 2.54] }} {...rest}>
+      <rect layer="F.Fab" x={-2.54} y={-7.62} w={h} h={w} />
       {children}
     </footprint>
   )
@@ -123,6 +137,8 @@ export default (
     <J8 at={`${J8_P1[0]} ${J8_P1[1]} 180deg`} height={RA_HEADER_H} />
     <U3 at={`${U3_P1[0]} ${U3_P1[1]} 90deg`} />
     <U4 at={`${U4_P1[0]} ${U4_P1[1]} 90deg`} />
+    <BreakoutBody ref="X6" value="Adafruit 4829 SGP40" file="./models/adafruit-4829-sgp40.step" w={25.4} h={17.78} at={`${U3_P1[0]} ${U3_P1[1]} 90deg`} />
+    <BreakoutBody ref="X7" value="Adafruit 5190 SCD-41" file="./models/adafruit-5187-scd4x.step" w={25.4} h={22.86} at={`${U4_P1[0]} ${U4_P1[1]} 90deg`} />
 
     {/* ---------------------------------------------------------------- level shifters */}
     <U1 at={`${U1_P1[0]} ${U1_P1[1]}`} height={DIP_BODY_H} />
@@ -245,9 +261,7 @@ export default (
     {stitch(GND, { pitch: 6, padClearance: 0.5 })}
     {HOLES.map(([x, y]) => keepout('all', circle(STANDOFF_CLEAR_D, x, y)))}
 
-    {/* the stack: breakouts above on their own header plastic, VFD 15 mm below on M3 standoffs */}
-    {reference('./refs/sgp40/pcb.tsx', { mate: { local: U3, remote: 'J1', pin: 1, nets: (n: string) => (n === '3V3' ? 'VIN' : n) }, stack: 'above', gap: BREAKOUT_GAP })}
-    {reference('./refs/scd41/pcb.tsx', { mate: { local: U4, remote: 'J1', pin: 1, nets: (n: string) => (n === '3V3' ? 'VIN' : n) }, stack: 'above', gap: BREAKOUT_GAP })}
+    {/* the stack: the VFD 15 mm below on M3 standoffs */}
     {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)] })}
 
     {/* ---------------------------------------------------------------- silk: polarity, pin 1 and pin names only */}

@@ -7,6 +7,7 @@
 // reference-collision on the carrier means >= 1.5 mm from every carrier underside body.
 import PCB, { nets, route, type FootprintProps } from '@pcbjs/core'
 import { JST_XH, MountingHole, PinHeader, rect } from '@pcbjs/lib'
+import { kicadModel } from '@pcbjs/kicad'
 import {
   BOARD_H, BOARD_W, CN1_AT, CN4_PIN1, HOLES, IDC_PITCH, VFD_C36, VFD_CN1, VFD_CN4, VFD_GLASS, VFD_HOLE_D,
   VFD_INDUCTORS, VFD_LOW_CORNER, VFD_REAR_3MM, VFD_SW1, VFD_THICKNESS,
@@ -17,7 +18,11 @@ const N = nets()
 
 // CN4: IRISO IMSA-9032B-16P box header, odd pins in the column nearer the board centre (-x),
 // pin 1 at the I/O-edge end, key slot facing the board centre. Nets as the carrier's J2.
-const J4 = PinHeader(8, { rows: 2, pitch: IDC_PITCH, value: 'CN4 IMSA-9032B-16P', silk: 'none' })
+// Drawn with KiCad's shrouded 2x8 box header, the same shape as the IRISO part.
+const J4 = PinHeader(8, {
+  rows: 2, pitch: IDC_PITCH, value: 'CN4 IMSA-9032B-16P', silk: 'none',
+  model: { file: kicadModel('${KICAD10_3DMODEL_DIR}/Connector_IDC.3dshapes/IDC-Header_2x08_P2.54mm_Vertical.step') },
+})
   .ref('CN4')
   .connect(Object.fromEntries(CN4.map((n, i) => [i + 1, N[n]])))
 // CN1: JST B7B-XH-A, serial + 5 V, unused by the carrier.

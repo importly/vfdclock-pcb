@@ -108,7 +108,7 @@ export const R8 = R0805('10k').source({ MPN: '0805W8F1002T5E', 'MPN:LCSC': LCSC.
 
 // ---------------------------------------------------------------- 3.3 V and USB
 /** 3.3 V for the module and sensors from V5_SYS: the jack's 5 V or USB, whichever is higher. */
-export const U7 = LDO('AMS1117-3.3').source({ MPN: 'AMS1117-3.3', Manufacturer: 'Advanced Monolithic Systems', 'MPN:LCSC': LCSC.AMS1117 })
+export const U7 = LDO({ value: 'AMS1117-3.3', model: { file: './models/SOT-223-4P_L6.5-W3.5-H1.6-LS7.0-P2.30.step' } }).source({ MPN: 'AMS1117-3.3', Manufacturer: 'Advanced Monolithic Systems', 'MPN:LCSC': LCSC.AMS1117 })
   .connect({ GND, VOUT: V3V3, VIN: V5_SYS })
 export const C5 = C0805('10u').source({ MPN: 'CL21A106KAYNNNE', 'MPN:LCSC': LCSC.C10u }).connect(V5_SYS, GND)
 export const C6 = C0805('22u').source({ MPN: 'CL21A226MAQNNNE', 'MPN:LCSC': LCSC.C22u }).connect(V3V3, GND)
@@ -125,7 +125,7 @@ export const J5 = USBC('full16').source({ MPN: 'TYPE-C-31-M-12', Manufacturer: '
 export const R5 = R0805('5.1k').source({ MPN: '0805W8F5101T5E', 'MPN:LCSC': LCSC.R5k1 }).connect(CC1, GND)
 export const R6 = R0805('5.1k').source({ MPN: '0805W8F5101T5E', 'MPN:LCSC': LCSC.R5k1 }).connect(CC2, GND)
 /** ESD clamp on D+, D- and VBUS, at the connector. */
-export const U6 = USBLC6('USBLC6-2SC6').source({ MPN: 'USBLC6-2SC6', Manufacturer: 'STMicroelectronics', 'MPN:LCSC': 'C7519' })
+export const U6 = USBLC6({ value: 'USBLC6-2SC6', model: { file: './models/SOT-23-6_L2.9-W1.6-H1.5-LS2.8-P0.95.step' } }).source({ MPN: 'USBLC6-2SC6', Manufacturer: 'STMicroelectronics', 'MPN:LCSC': 'C7519' })
   .connect({ IO1: USB_DP, IO2: USB_DN, GND, VBUS })
 
 // ---------------------------------------------------------------- power for the VFD
