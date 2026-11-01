@@ -17,7 +17,7 @@ This branch (`wroom`) replaces rev 0.2's ESP32-S3-DevKitC-1 (on `master`) with t
 | --- | --- |
 | Top middle | U5, the ESP32-S3-WROOM-1, antenna up. The antenna hangs over a 19 × 6 mm notch in the top edge. Espressif's keep-out (no copper on either layer, 15 mm either side and past the end) covers the strip beside it. |
 | Top left | U7 (AMS1117-3.3) with C5/C6, the RESET button SW1, the EN delay (R7, C8), C9/C7 at the module's 3V3 pad, and TP5 (3V3). |
-| Left edge | J8, the right-angle expansion header (pins out of the left edge), then USB-C J5 low on the edge with its clamp U6, CC resistors R5/R6 and the 5 V diodes D2/D3. |
+| Left edge | J8, the right-angle expansion header, its pins pointing at the left edge and ending 0.4 mm inside it, then USB-C J5 low on the edge with its clamp U6, CC resistors R5/R6 and the 5 V diodes D2/D3. |
 | Left, inboard | The SGP40 breakout above the SCD-41 breakout. |
 | Below the module | R8 (/WR pull-up), the BOOT button SW2, and TX/RX test pads beside the module's right side. |
 | Right of the module | U1 (D0–D7) and U2 (/WR) standing beside J2, with C3/C4, the RDY divider and TP3/TP4. |

@@ -42,10 +42,11 @@ const RA_HEADER_H = 2.6 // right-angle header lying on its side
 const U1_P1: [number, number] = [89.0, 4.5]
 const U2_P1: [number, number] = [89.0, 33.0]
 // The sensor breakouts' header rows, pin 1 (VIN) at the left; each board stands up from its header.
-const U3_P1: [number, number] = [16.62, 27.74]
-const U4_P1: [number, number] = [16.62, 52.32]
-// J8 on the left edge, pins out past it; pad 1 at the bottom.
-const J8_P1: [number, number] = [4.04, 29.78]
+const U3_P1: [number, number] = [21.62, 27.74]
+const U4_P1: [number, number] = [21.62, 52.32]
+// J8 near the left edge, pins pointing at it and ending 0.4 mm inside it (tips 10.04 mm from the pads);
+// pad 1 at the bottom. The sensors stand clear to its right.
+const J8_P1: [number, number] = [10.45, 29.78]
 const J2_PIN1_Y = J2_AT[1] - 3.5 * IDC_PITCH
 const j2y = (pin: number) => J2_PIN1_Y + Math.floor((pin - 1) / 2) * IDC_PITCH
 const C1_C: [number, number] = [110.5, 43.5]
@@ -256,7 +257,7 @@ export default (
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] - 9.9} V ${J2_AT[1] - 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] - 9.9}`} />
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] + 9.9} V ${J2_AT[1] + 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] + 9.9}`} />
     <path layer={SILK} d={`M 103.0 ${J2_PIN1_Y - 0.8} L 104.5 ${J2_PIN1_Y} L 103.0 ${J2_PIN1_Y + 0.8} Z`} fill />
-    {J8_LABELS.map((l, i) => <text layer={SILK} at={`6.3 ${J8_P1[1] - (7 - i) * 2.54}`} size={0.7} anchor="start">{l}</text>)}
+    {J8_LABELS.map((l, i) => <text layer={SILK} at={`${J8_P1[0] + 1.45} ${J8_P1[1] - (7 - i) * 2.54}`} size={0.7} anchor="start">{l}</text>)}
     <text layer={SILK} at="106.5 60.0" size={0.8}>5V</text>
     <text layer={SILK} at="110.5 60.0" size={0.8}>GND</text>
     <text layer={SILK} at="84.5 28.6" size={0.8}>RDY</text>
