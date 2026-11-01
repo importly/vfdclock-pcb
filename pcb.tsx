@@ -19,6 +19,7 @@ import {
   VFD_THICKNESS, pinX,
 } from './lib/frame'
 import { DEVKIT_NET_OF } from './lib/pinout'
+import { JACK_FRONT } from './lib/barrelJack'
 
 // ---------------------------------------------------------------- outline: VFD size, CN4 notch open to the right edge
 const N = NOTCH
@@ -31,7 +32,6 @@ const Hole = MountingHole(CARRIER_HOLE_D)
 const DIP_BODY_H = 5.3 // DIP-20 body plus standoff
 const DISC_H = 8.0 // 5 mm disc cap standing on its leads
 const RA_HEADER_H = 2.6 // right-angle header lying on its side
-const JACK_H = 10.7 // KiCad BarrelJack_Horizontal model box
 
 // ---------------------------------------------------------------- placement anchors
 // U1 lies above the devkit's J1 row, pin 1 at the left of its lower (A) row: A1 = D7 at the left ...
@@ -66,7 +66,7 @@ const V33_Y = 50.5
 /** A body with no pads, centred on at: solder tails of top-side THT parts, below the carrier. */
 function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: number }) {
   return (
-    <footprint id="carrier:THT-tails" bom={false} pos={false} {...rest}>
+    <footprint id="carrier:THT-tails" bom={false} pos={false} model={{ kind: 'ic', w, h, height: rest.height as number, color: '#9a9a9a' }} {...rest}>
       <rect layer="F.Fab" x={-w / 2} y={-h / 2} w={w} h={h} />
       {children}
     </footprint>
@@ -130,7 +130,7 @@ export default (
     <C1 at={`${C1_C[0] - 2.5} ${C1_C[1]}`} height={C1_HEIGHT} />
     <C2 at="104.3 38.5 180deg" />
     {/* barrel jack, opening on the right edge */}
-    <J1 at={`${BOARD_W - 13.7} 48.0 180deg`} height={JACK_H} thermal={{ 2: 'solid', 3: 'solid' }} />
+    <J1 at={`${BOARD_W + 0.3 - JACK_FRONT} 48.0`} thermal={{ 2: 'solid', 3: 'solid' }} />
     <R1 at="106.5 53.5 270deg" />
     <D1 at="110.5 54.5" />
     <TP1 at="106.5 58.0" />

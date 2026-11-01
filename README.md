@@ -7,6 +7,8 @@ A 131 × 66 mm backpack for the Noritake GU256X128C-3900, on the display's own f
 - Board: JLCPCB 2-layer, 1.6 mm, GND poured on both layers and stitched at 6 mm.
 - `npx pcbjs check`: DRC 0, ERC 0, all 36 automatic routes placed from a cold cache. `npx pcbjs build -q`: ORDERABLE.
 - Fab set: `.pcbjs/fab/vfdclock-carrier/` (zip, Gerbers, drills, `bom.csv`, `cpl.csv`). Shots: `.pcbjs/shots/`.
+- Online preview: https://importly.github.io/vfdclock-pcb/ (see Online preview below).
+- The `wroom` branch holds the next revision, with a bare ESP32-S3-WROOM-1 module instead of the devkit.
 
 ## Layout (top view = the clock's back)
 
@@ -60,27 +62,27 @@ U1's channel n carries bit 8−n (A1/B1 = D7 … A8/B8 = D0). This keeps the dev
 
 ## Power
 
-- **Input:** 5 V into J1, centre positive, at least 2.5 A. The VFD draws up to 1.1 A, and twice that at switch-on.
+- **Input:** 5 V into J1, centre positive, at least 2.5 A: the owned 5 V 15 W (3 A) wall adapter, DigiKey 839-16-00119-ND. The VFD draws up to 1.1 A, and twice that at switch-on.
 - **5 V path:** an F.Cu zone joins J1's centre pin, C1, C2 and J2 pins 15/16. A 0.8 mm B.Cu track runs from C1 under J2 and along the top edge to U1, C3 and D2.
 - **Return path:** J2's GND pins are joined solid, with stubs to vias into the B.Cu ground.
 - **Acceptance check:** at least 4.9 V on TP1 with the display running.
 - **Bulk and decoupling:**
   - C1: Rubycon 16YXJ1000MT810X16, 1000 µF 16 V. It is the tallest part, 17.5 mm, so leave room behind the back panel or bend it over onto its side. Polarity: "+" and the shaded negative side are on the silk.
   - C2: 10 µF 0805.
-  - C3 and C4: 100 nF discs, one at each DIP's pin 20.
+  - C3 and C4: 100 nF radials (Vishay K104K15X7RF5TL2), one at each DIP's pin 20.
 - **Devkit supply:** D2 (B5819W) feeds +5 V to the devkit's 5V pin, so its USB can't back-feed the VFD supply. The devkit's 3V3 powers the sensors, J8 and the RDY divider.
 - **RDY readback:** RDY is open-collector with 47 kΩ to 5 V inside the VFD. R_RDY1 (10 kΩ to 3V3) and R_RDY2 (39 kΩ to GND) give about 2.97 V high (V_IH 2.475 V) and 0.2 V low.
 
 ## BOM
 
-The rule: parts already owned stay through-hole; everything bought new is SMD.
+The rule: parts already owned stay through-hole; everything bought new is SMD. "Owned" means the DigiKey order of 2026-08-30.
 
 | Ref | Qty | Part | Status |
 | --- | --- | --- | --- |
-| U1, U2 | 2 | SN74AHCT245N, DIP-20 | owned (THT) |
-| C1 | 1 | Rubycon 16YXJ1000MT810X16, 1000 µF 16 V, D10 P5.0 | owned (THT) |
-| C3, C4 | 2 | 100 nF ceramic disc, P5.0 | owned (THT) |
-| J1 | 1 | DC barrel jack 5.5/2.1 (DC-005 style) | owned (THT) |
+| U1, U2 | 2 | TI SN74AHCT245N, DIP-20 (DigiKey 296-1476-5-ND; 4 owned) | owned (THT) |
+| C1 | 1 | Rubycon 16YXJ1000MT810X16, 1000 µF 16 V, D10 × 16, P5.0 (1189-1545-1-ND; 2 owned) | owned (THT) |
+| C3, C4 | 2 | Vishay K104K15X7RF5TL2, 100 nF 50 V X7R radial, P5.0 (BC1084CT-ND; 12 owned) | owned (THT) |
+| J1 | 1 | SparkFun PRT-10811 DC barrel jack 5.5/2.1, right angle (4UCON 18742; 1568-10811-ND) | owned (THT) |
 | U3 | 1 | Adafruit 4829, SGP40, soldered by its own 1 × 5 header | owned |
 | U4 | 1 | Adafruit 5190, SCD-41, soldered by its own 1 × 5 header | owned |
 | — | 1 | ESP32-S3-DevKitC-1 N16R8, USB-C clone, soldered by its own pins | owned |
@@ -91,10 +93,13 @@ The rule: parts already owned stay through-hole; everything bought new is SMD.
 | R_RDY1, R_RDY2 | 2 | 10 kΩ and 39 kΩ 0805 | to buy (SMD) |
 | D1 | 1 | green LED 0805 | to buy (SMD) |
 | D2 | 1 | B5819W Schottky, SOD-123 | to buy (SMD) |
-| — | 2 | AWP 16-7540-T IDC sockets plus 16-way 1.27 mm flat ribbon, 5–8 cm | owned sockets; cable to buy |
+| — | 2 | Ribbon cable: 2 × AWP 16-7540-T IDC sockets (HHKC16S-ND), 2 × AWZ-16-T strain reliefs (HSSR16-ND), 16-way 1.27 mm grey flat ribbon AWG28-16/G/300, 5–8 cm | owned |
+| — | 1 | 5 V 15 W wall adapter, 5.5/2.1 plug (839-16-00119-ND) | owned |
 | — | 4 | M3 standoffs, 15 mm, with screws | to buy |
 
 The devkit and sensor rows are bare plated holes, so they are left out of `bom.csv` and `cpl.csv`. No LCSC numbers are entered.
+
+Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's resistors are SMD, by choice), two spare 245s, the second 1000 µF can, ten spare 100 nF caps, and the breadboard parts from the earlier rig.
 
 ## Assembly order
 
@@ -107,10 +112,10 @@ The devkit and sensor rows are bare plated holes, so they are left out of `bom.c
 ## Check before ordering
 
 1. **Devkit row spacing.** 22.86 mm (`DEVKIT_ROW` in `lib/frame.ts`), confirmed from a photo of the owner's board: the rows are 8.96 pin pitches apart.
-2. **Barrel jack.** The footprint is KiCad's `BarrelJack_Horizontal` (DC-005 style). Check it against the jack you own.
-3. **C3/C4 lead spacing** is assumed to be 5 mm.
+2. **Barrel jack.** The footprint (`lib/barrelJack.tsx`) follows the SparkFun PRT-10811 / 4UCON 18742 drawing: centre pin 13.6 mm and sleeve 7.8 mm behind the front face, switch pin 10.6 mm back and 4.8 mm to the side. It matches SparkFun's own footprint to 0.1 mm.
+3. **C3/C4 lead spacing:** 5.0 mm, from Vishay's part code (F5).
 4. **VFD SW1 No.6 = ON** (graphic DMA mode). Set it before stacking: the carrier covers the switch.
-5. **Cable:** straight 16-way, red stripe on pin 1 at both ends.
+5. **Cable:** press an IDC socket onto each end of the 16-way ribbon, both facing the same way, with the red stripe on pin 1 at both ends, then clip on the strain reliefs.
 
 ## The stack and its checks
 
@@ -118,6 +123,16 @@ The devkit and sensor rows are bare plated holes, so they are left out of `bom.c
 - `refs/vfd` sits 16.6 mm below.
 - The sensor geometry comes from Adafruit's own Eagle boards (`Adafruit-SGP40-PCB`, `Adafruit-SCD-4x-PCB`).
 - Under the carrier, every solder tail is modelled and checked against the display's rear parts. The display's tall parts are each grown by ±2 mm photo tolerance plus 1.5 mm clearance.
+
+## Online preview
+
+Every push to `master` runs `.github/workflows/pages.yml`, which builds the pcbjs viewer and publishes it to https://importly.github.io/vfdclock-pcb/. The site has the 2D layout, the schematic, the 3D view with the reference boards, and the DRC/ERC findings. Clicking an item opens its source line on GitHub, and the board page has a download for the fab zip.
+
+- **One-time setup:** in the repo, Settings → Pages → Build and deployment → Source: **GitHub Actions**.
+- **Branch rule:** Settings → Environments → `github-pages` must allow `master`.
+- **Local copy:** `npm run build && npm run preview` serves the same site under `/vfdclock-pcb/`.
+
+`footprints/` holds copies of the KiCad footprints the board uses, so it builds on a machine without KiCad, such as the GitHub runner. pcbjs downloads their 3D models from KiCad's library when no KiCad is installed.
 
 ## Commands
 

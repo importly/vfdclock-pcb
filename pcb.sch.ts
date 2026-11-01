@@ -4,10 +4,11 @@
 // the 0.1 uF discs, the barrel jack); everything bought new is SMD. Every part sits on the top face,
 // the outside of the stack, where a clear back panel shows it.
 import { bus, nets, NC, type Net } from '@pcbjs/core'
-import { kicadFootprint } from '@pcbjs/kicad'
+import { kicadFootprint, kicadModel } from '@pcbjs/kicad'
 import { C0805, LED0805, R0805, TestPad } from '@pcbjs/lib'
+import { BarrelJack10811 } from './lib/barrelJack'
 import { BreakoutRow, DevkitRow } from './lib/devkitRow'
-import { IDC_PITCH } from './lib/frame'
+import { C1_HEIGHT, IDC_PITCH } from './lib/frame'
 import { CARRIER_NET_OF, CN4, DEVKIT_J1, DEVKIT_J3 } from './lib/pinout'
 
 // ---------------------------------------------------------------- nets
@@ -47,8 +48,11 @@ const NET: Record<string, Net> = {
 // ---------------------------------------------------------------- footprints
 // KiCad's library silk is 0.12 mm, under JLCPCB's 0.15 mm; those parts take silk: 'none' and
 // pcb.tsx draws their outlines at 0.15 mm.
-const BarrelJack = kicadFootprint('Connector_BarrelJack:BarrelJack_Horizontal', { silk: 'none' })
-const CapRadial = kicadFootprint('Capacitor_THT:CP_Radial_D10.0mm_P5.00mm', { silk: 'none' })
+// KiCad's D10 can model is 10 mm tall; the owned Rubycon 16YXJ1000MT810X16 stands 17.5 mm, so it is stretched in z.
+const CapRadial = kicadFootprint('Capacitor_THT:CP_Radial_D10.0mm_P5.00mm', {
+  silk: 'none',
+  model: { file: kicadModel('${KICAD10_3DMODEL_DIR}/Capacitor_THT.3dshapes/CP_Radial_D10.0mm_P5.00mm.step'), scale: [1, 1, C1_HEIGHT / 10] },
+})
 const CapDisc = kicadFootprint('Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm', { silk: 'none' })
 const SOD123 = kicadFootprint('Diode_SMD:D_SOD-123', { silk: 'none', pinNames: { 1: 'K', 2: 'A' } })
 // Keyed SMD box header; the key slot is on the odd-pin (-x) side, as on the VFD's CN4.
@@ -62,8 +66,8 @@ const DIP20_245 = kicadFootprint('Package_DIP:DIP-20_W7.62mm', {
 })
 
 // ---------------------------------------------------------------- power
-/** 5.5/2.1 mm DC jack, centre positive; pin 3 is the sleeve switch, tied to GND. Owned; opening on the right edge. */
-export const J1 = BarrelJack('DC jack 5.5/2.1').source({ MPN: 'DC-005', Description: 'DC barrel jack 5.5x2.1 mm THT, owned' }).connect({ 1: V5, 2: GND, 3: GND })
+/** 5.5/2.1 mm DC jack (SparkFun PRT-10811), centre positive; pin 3 is the sleeve switch, tied to GND. Owned; opening on the right edge. */
+export const J1 = BarrelJack10811('DC jack 5.5/2.1').source({ MPN: '10811', Manufacturer: 'SparkFun', Description: 'DC barrel jack 5.5x2.1 mm, right angle THT (4UCON 18742), owned' }).connect({ 1: V5, 2: GND, 3: GND })
 /** Bulk 1000 uF at the VFD connector: the VFD's switch-on surge. Owned, THT radial D10 P5, 17.5 mm tall. */
 export const C1 = CapRadial('1000u 16V').source({ MPN: '16YXJ1000MT810X16', Manufacturer: 'Rubycon', Description: 'Al electrolytic 1000 uF 16 V radial D10 x 16 P5.0, owned' }).connect({ 1: V5, 2: GND })
 export const C2 = C0805('10u').source({ MPN: 'CL21A106KAYNNNE' }).connect(V5, GND)
