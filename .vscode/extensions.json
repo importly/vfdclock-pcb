@@ -1,0 +1,4 @@
+{
+  // pcbjs is published as a pre-release only: install it with "Install Pre-Release Version"
+  "recommendations": ["pcbjs.vscode-pcbjs"]
+}

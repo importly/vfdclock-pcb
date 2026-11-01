@@ -1,0 +1,16 @@
+{
+  "name": "pcb",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "pcbjs dev",
+    "build": "pcbjs build",
+    "preview": "pcbjs preview"
+  },
+  "devDependencies": {
+    "@pcbjs/pcbjs": "beta",
+    "@pcbjs/core": "beta",
+    "@pcbjs/fab": "beta",
+    "@pcbjs/lib": "beta"
+  }
+}
