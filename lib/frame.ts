@@ -78,49 +78,14 @@ export const BREAKOUT_TAIL = 3.0
 /** Display glass on the VFD's front face (away from the carrier): glass front to PCB rear 12.9 mm. */
 export const VFD_GLASS = { w: 120.0, h: 60.0, height: 12.9 - 1.6 } as const
 
-// ---------------------------------------------------------------- ESP32-S3-DevKitC-1 (v1.1, N16R8)
-// Espressif DXF: 25.40 x 62.865, 0.5 mm chamfers, 2 x 22 pins at 2.54 mm.
-/** Row centre to centre: 9 pitches, confirmed on the owner's USB-C board from a photo (8.96 pitches). */
-export const DEVKIT_ROW = 22.86
-export const DEVKIT_PITCH = 2.54
-/** Board edge to the nearer row centre. */
-export const DEVKIT_EDGE_TO_ROW = 1.27
-export const DEVKIT_W = DEVKIT_ROW + 2 * DEVKIT_EDGE_TO_ROW
-export const DEVKIT_LEN = 62.865
-export const DEVKIT_CHAMFER = 0.5
-/** Pin 1 of both rows is at the antenna end, this far from the USB edge; pin 22 is 21 pitches nearer. */
-export const DEVKIT_PIN1_FROM_USB = 61.3
-export const DEVKIT_PINS = 22
-/** WROOM-1 module: width, length, and how far its antenna overhangs the antenna-end edge. */
-export const MODULE_W = 18.0
-export const MODULE_LEN = 25.5
-export const ANTENNA_OVERHANG = 6.3
-/** USB-C receptacle centres, from the devkit's left edge, seen from the top with USB down (measured on the owner's board). */
-export const USB_C_X: readonly number[] = [6.3, 17.5]
-/** Carrier top face to devkit underside: the devkit is soldered straight in, on its 2.5 mm header plastic. */
-export const DEVKIT_GAP = 2.5
-/** The devkit's header pins below the carrier's underside. */
-export const DEVKIT_TAIL = 3.0
-
-// Devkit on the carrier: lying along x, USB end flush with the carrier's left edge (x = 0) so both
-// USB-C ports open out of the left side of the sandwich; antenna end pointing right, into the board.
-// Seen from the top, devkit J1 (all the VFD signals) is the upper row and devkit J3 the lower one.
-/** Carrier x of the devkit's USB edge, and carrier y of its J1-side edge. */
-export const DEVKIT_X = 0.0
-export const DEVKIT_Y = 21.0
-/** Carrier y of the devkit J1 row (signals) and the devkit J3 row. */
-export const ROW_J1_Y = DEVKIT_Y + DEVKIT_EDGE_TO_ROW
-export const ROW_J3_Y = ROW_J1_Y + DEVKIT_ROW
-/** Carrier x of devkit pin p, both rows: pin 1 nearest the antenna end (right). */
-export const pinX = (p: number) => DEVKIT_X + DEVKIT_PIN1_FROM_USB - (p - 1) * DEVKIT_PITCH
-const MODULE_CY = (ROW_J1_Y + ROW_J3_Y) / 2
-/** Antenna keep-out, both copper layers and no parts: the last 6 mm of the devkit and the overhang + 1 mm. */
-export const ANTENNA_KEEPOUT = {
-  x0: DEVKIT_X + DEVKIT_LEN - 6.0,
-  x1: DEVKIT_X + DEVKIT_LEN + ANTENNA_OVERHANG + 1.0,
-  y0: MODULE_CY - MODULE_W / 2,
-  y1: MODULE_CY + MODULE_W / 2,
-} as const
+// ---------------------------------------------------------------- ESP32-S3-WROOM-1 on the carrier
+// The bare module (18 x 25.5, lib/esp32s3Wroom1.tsx) sits on the top edge with its antenna end up.
+// The antenna hangs over a notch in the board, and Espressif's keep-out (no copper, 15 mm either side
+// and beyond the end) covers the rest. The module's own 3V3 comes from U7, an AMS1117 on the carrier.
+/** Module centre. Its antenna end is flush with the top edge. */
+export const WROOM_AT: readonly [number, number] = [62.0, 12.75]
+/** Notch under the antenna: the module width plus 0.5 mm a side, 6 mm deep, inner corners r 1. */
+export const ANT_NOTCH = { x0: WROOM_AT[0] - 9.5, x1: WROOM_AT[0] + 9.5, depth: 6.0, r: 1.0 } as const
 
 // ---------------------------------------------------------------- Adafruit STEMMA QT breakouts, soldered on by their headers
 // From Adafruit's Eagle boards (Adafruit-SGP40-PCB, Adafruit-SCD-4x-PCB). Both are 25.4 mm long with a

@@ -1,51 +1,40 @@
 // Pinouts shared by the carrier and its reference boards, so the two sides of a mate cannot disagree.
 
-/** ESP32-S3-DevKitC-1 header J1, pins 1 to 22 (pin 1 at the antenna end). */
-export const DEVKIT_J1 = [
-  '3V3', '3V3', 'RST', 'GPIO4', 'GPIO5', 'GPIO6', 'GPIO7', 'GPIO15', 'GPIO16', 'GPIO17', 'GPIO18',
-  'GPIO8', 'GPIO3', 'GPIO46', 'GPIO9', 'GPIO10', 'GPIO11', 'GPIO12', 'GPIO13', 'GPIO14', '5V', 'GND',
+/**
+ * ESP32-S3-WROOM-1 pad names, pads 1 to 41 (KiCad's RF_Module symbol): 1-14 down the left side from
+ * the antenna end, 15-26 along the bottom, 27-40 up the right side, 41 the ground pad.
+ */
+export const WROOM_PADS = [
+  'GND', '3V3', 'EN', 'IO4', 'IO5', 'IO6', 'IO7', 'IO15', 'IO16', 'IO17', 'IO18', 'IO8', 'IO19', 'IO20',
+  'IO3', 'IO46', 'IO9', 'IO10', 'IO11', 'IO12', 'IO13', 'IO14', 'IO21', 'IO47', 'IO48', 'IO45',
+  'IO0', 'IO35', 'IO36', 'IO37', 'IO38', 'IO39', 'IO40', 'IO41', 'IO42', 'RXD0', 'TXD0', 'IO2', 'IO1', 'GND',
+  'GND',
 ] as const
-
-/** ESP32-S3-DevKitC-1 header J3, pins 1 to 22 (pin 1 at the antenna end). */
-export const DEVKIT_J3 = [
-  'GND', 'TX', 'RX', 'GPIO1', 'GPIO2', 'GPIO42', 'GPIO41', 'GPIO40', 'GPIO39', 'GPIO38', 'GPIO37',
-  'GPIO36', 'GPIO35', 'GPIO0', 'GPIO45', 'GPIO48', 'GPIO47', 'GPIO21', 'GPIO20', 'GPIO19', 'GND', 'GND',
-] as const
-
-export type DevkitPin = (typeof DEVKIT_J1)[number] | (typeof DEVKIT_J3)[number]
 
 /**
- * Carrier net for each devkit pin the carrier uses; every other devkit pin is left open (NC).
- * VFD bit Dk comes from GPIO(4+k) for D0..D3, then GPIO8, 9, 10, 11 for D4..D7.
+ * The GPIO map, chosen by the module's pad order so each group leaves the module on its own side
+ * with no crossings:
+ * - the display bus fans straight down from ten bottom pads: /WR (pad 15), RDY (pad 17), then
+ *   D0..D7 (pads 18-25), D7 at the right;
+ * - down the left side: 3V3 and EN (pads 2, 3), the expansion header (pads 4-9), I2C (pads 10, 11),
+ *   USB (pads 13, 14).
+ * IO3 (/WR) and IO0 (BOOT) are strapping pins, harmless here: IO3 only selects the JTAG source when
+ * an eFuse asks it to, and /WR is pulled high, inactive, while the chip boots.
+ * The bus is not one run of GPIO numbers, so firmware writes it with a dedicated-GPIO bundle
+ * (dedic_gpio), one instruction for all eight bits, or with the LCD_CAM i80 peripheral.
+ * IO47 and IO48 are 3.3 V only on 3.3 V-flash modules such as the N16R8; never fit an "R16V" module.
  */
-export const CARRIER_NET_OF: Partial<Record<DevkitPin, string>> = {
-  '3V3': '3V3',
-  '5V': 'V5_ESP',
-  GND: 'GND',
-  GPIO4: 'D0',
-  GPIO5: 'D1',
-  GPIO6: 'D2',
-  GPIO7: 'D3',
-  GPIO8: 'D4',
-  GPIO9: 'D5',
-  GPIO10: 'D6',
-  GPIO11: 'D7',
-  GPIO12: 'WR',
-  GPIO13: 'RDY',
-  GPIO1: 'SDA',
-  GPIO2: 'SCL',
-  GPIO14: 'GPIO14',
-  GPIO15: 'GPIO15',
-  GPIO16: 'GPIO16',
-  GPIO17: 'GPIO17',
-  GPIO18: 'GPIO18',
-  GPIO21: 'GPIO21',
-}
-
-/** Carrier net name to devkit net name, for the reference mate's `nets` check. */
-export const DEVKIT_NET_OF: Record<string, string> = Object.fromEntries(
-  Object.entries(CARRIER_NET_OF).map(([devkit, carrier]) => [carrier as string, devkit]),
-)
+export const GPIO = {
+  WR: 'IO3',
+  RDY: 'IO9',
+  D: ['IO10', 'IO11', 'IO12', 'IO13', 'IO14', 'IO21', 'IO47', 'IO48'],
+  EXP: ['IO4', 'IO5', 'IO6', 'IO7', 'IO15', 'IO16'],
+  SDA: 'IO17',
+  SCL: 'IO18',
+  USB_DN: 'IO19',
+  USB_DP: 'IO20',
+  BOOT: 'IO0',
+} as const
 
 /** VFD CN4 = carrier J2, pins 1 to 16. */
 export const CN4 = [

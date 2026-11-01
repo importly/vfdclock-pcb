@@ -1,50 +1,51 @@
-// vfdclock ESP32-S3 VFD carrier, rev 0.2: a backpack the size of the Noritake GU256X128C-3900, on the
-// VFD's own M3 holes. Every part sits on the top face, the outside of the stack, behind a clear back.
+// vfdclock ESP32-S3 VFD carrier, rev 0.3 (WROOM): a backpack the size of the Noritake GU256X128C-3900,
+// on the VFD's own M3 holes, with a bare ESP32-S3-WROOM-1 module instead of the devkit. Every part sits
+// on the top face, the outside of the stack, behind a clear back.
 // Frame: mm, origin at the top-left corner, x right, y down; the top view is the VFD's rear view, the
 // top edge is the VFD's I/O-hole edge. Shared geometry: lib/frame.ts. Nets and parts: pcb.sch.ts.
-// Left: the devkit, soldered straight in, USB-C out of the left edge, antenna pointing into the board
-// over a copper-free keep-out. Above it U1 (data bus); below it the SGP40 and the expansion header J8.
-// Right: U2 (/WR), the SCD-41, and the power corner: J2 to the VFD, C1, the barrel jack, the LED.
+// Top middle: the module, antenna up over a notch in the top edge. Right: U1 and U2 beside J2 and
+// the power corner. Left: the 3.3 V regulator and buttons along the top, the expansion header J8 and
+// the two sensor breakouts down the left side, USB-C low on the left edge.
 import PCB from '@pcbjs/fab/JLCPCB/2-Layer'
 import { keepout, pour, reference, route, stitch, via, type FootprintProps } from '@pcbjs/core'
 import { MountingHole, circle } from '@pcbjs/lib'
 import * as sch from './pcb.sch'
 import {
-  C1, C2, C3, C4, D1, D2, GND, J1, J2, J3, J4, J8, R1, R_RDY1, R_RDY2, RDY, VFD_WR,
-  TP1, TP2, TP3, TP4, U1, U2, U3, U4, V5,
+  C1, C2, C3, C4, C5, C6, C7, C8, C9, D1, D2, D3, GND, J1, J2, J5, J8, R1, R5, R6, R7, R8, R_RDY1, R_RDY2,
+  RDY, SW1, SW2, TP1, TP2, TP3, TP4, TP5, TP6, TP7, U1, U2, U3, U4, U5, U6, U7, V5, VFD_WR,
 } from './pcb.sch'
 import {
-  ANTENNA_KEEPOUT, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, DEVKIT_GAP,
-  DEVKIT_TAIL, HOLES, IDC_PITCH, J2_AT, NOTCH, ROW_J1_Y, ROW_J3_Y, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL,
-  VFD_THICKNESS, pinX,
+  ANT_NOTCH, BOARD_H, BOARD_W, BREAKOUT_GAP, BREAKOUT_TAIL, C1_HEIGHT, CARRIER_HOLE_D, HOLES, IDC_PITCH, J2_AT,
+  NOTCH, STANDOFF_CLEAR_D, STANDOFF_LEN, THT_TAIL, VFD_THICKNESS, WROOM_AT,
 } from './lib/frame'
-import { DEVKIT_NET_OF } from './lib/pinout'
+import { GPIO, WROOM_PADS } from './lib/pinout'
 import { JACK_FRONT } from './lib/barrelJack'
 
-// ---------------------------------------------------------------- outline: VFD size, CN4 notch open to the right edge
+// ---------------------------------------------------------------- outline: VFD size, antenna notch at the top, CN4 notch at the right
 const N = NOTCH
+const A = ANT_NOTCH
 const OUTLINE =
-  `M 0 0 H ${BOARD_W} V ${N.y0} H ${N.x + N.r} A ${N.r} ${N.r} 0 0 0 ${N.x} ${N.y0 + N.r} ` +
+  `M 0 0 H ${A.x0} V ${A.depth - A.r} A ${A.r} ${A.r} 0 0 0 ${A.x0 + A.r} ${A.depth} ` +
+  `H ${A.x1 - A.r} A ${A.r} ${A.r} 0 0 0 ${A.x1} ${A.depth - A.r} V 0 ` +
+  `H ${BOARD_W} V ${N.y0} H ${N.x + N.r} A ${N.r} ${N.r} 0 0 0 ${N.x} ${N.y0 + N.r} ` +
   `V ${N.y1 - N.r} A ${N.r} ${N.r} 0 0 0 ${N.x + N.r} ${N.y1} H ${BOARD_W} V ${BOARD_H} H 0 Z`
 const Hole = MountingHole(CARRIER_HOLE_D)
 
 // ---------------------------------------------------------------- body heights above the carrier (mm)
 const DIP_BODY_H = 5.3 // DIP-20 body plus standoff
-const DISC_H = 8.0 // 5 mm disc cap standing on its leads
+const DISC_H = 8.0 // 5 mm radial cap standing on its leads
 const RA_HEADER_H = 2.6 // right-angle header lying on its side
 
 // ---------------------------------------------------------------- placement anchors
-// U1 lies above the devkit's J1 row, pin 1 at the left of its lower (A) row: A1 = D7 at the left ...
-// A8 = D0 at the right, under the devkit's GPIO4..7, so D3..D0 drop straight in. Its B row feeds the
-// bus up into the top band and right to J2.
-const U1_P1: [number, number] = [33.0, 18.0]
-// U2, pin 1 at the right of its upper (A) row: A1 near the right end, VCC (pin 20) below pin 1.
-const U2_P1: [number, number] = [99.0, 23.0]
-// The breakouts' header rows, pin 1 (VIN) at the left; each board stands up from its header.
-const U3_P1: [number, number] = [40.0, 62.96]
-const U4_P1: [number, number] = [83.62, 62.96]
-const HDR_Y = BOARD_H - 4.04 // right-angle header pad row: body to the edge, pins 6 mm past it
-const J8_P1X = 27.78 // J8 pad 1 (3V3), pads run left
+// U1 and U2 stand beside J2, pin 1 at the top: A column (inputs) on the left, B column (outputs)
+// facing J2. U1's A column takes the bus top-down D7..D0; U2's A1 takes /WR below it.
+const U1_P1: [number, number] = [89.0, 4.5]
+const U2_P1: [number, number] = [89.0, 33.0]
+// The sensor breakouts' header rows, pin 1 (VIN) at the left; each board stands up from its header.
+const U3_P1: [number, number] = [16.62, 27.74]
+const U4_P1: [number, number] = [16.62, 52.32]
+// J8 on the left edge, pins out past it; pad 1 at the bottom.
+const J8_P1: [number, number] = [4.04, 29.78]
 const J2_PIN1_Y = J2_AT[1] - 3.5 * IDC_PITCH
 const j2y = (pin: number) => J2_PIN1_Y + Math.floor((pin - 1) / 2) * IDC_PITCH
 const C1_C: [number, number] = [110.5, 43.5]
@@ -52,16 +53,12 @@ const SILK = 'F.SilkS'
 const TOP = ['F.Cu'] as const
 const BOTH = ['B.Cu', 'F.Cu'] as const
 
-// Bit k of the bus: devkit J1 row pin carrying it; U1 channel 8-k (A/B), VFD CN4 pin 8-k.
-const BUS_SOCKET_PIN = [4, 5, 6, 7, 12, 15, 16, 17] as const
-// The V5 copper from the jack to J2 pins 15/16, C1 and C4: a solid zone, far wider than 2 mm.
+// The V5 copper from the jack to J2 pins 15/16, C1 and C2: a solid zone, far wider than 2 mm.
 const V5_ZONE = 'M 104.3 30.9 H 119.4 V 51.2 H 104.3 Z'
-// /WR and RDY reach J2 on B.Cu and come up through these vias, between J2's GND stubs.
+// /WR and RDY reach J2's even column through these vias, between J2's GND stubs.
 const WR_VIA = via(VFD_WR, `101.5 ${j2y(9) + IDC_PITCH / 2}`)
 const RDY_VIA = via(RDY, `101.5 ${j2y(11) + IDC_PITCH / 2}`)
-// The 3V3 run from the devkit's antenna end, round the antenna keep-out, to the sensors and J8.
-const V33_X = 71.5
-const V33_Y = 50.5
+const pin = (name: (typeof WROOM_PADS)[number]) => U5.pin(name)
 
 /** A body with no pads, centred on at: solder tails of top-side THT parts, below the carrier. */
 function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: number }) {
@@ -72,26 +69,20 @@ function TailBody({ children, w, h, ...rest }: FootprintProps & { w: number; h: 
     </footprint>
   )
 }
-const ROW_CX = (pinX(1) + pinX(22)) / 2
-const ROW_LEN = pinX(1) - pinX(22) + 2
 // [x, y, w, h, height]: header pins and leads below the carrier, checked against the VFD's rear parts.
 const TAILS: [number, number, number, number, number][] = [
-  [ROW_CX, ROW_J1_Y, ROW_LEN, 2, DEVKIT_TAIL],
-  [ROW_CX, ROW_J3_Y, ROW_LEN, 2, DEVKIT_TAIL],
   [C1_C[0], C1_C[1], 7, 2, THT_TAIL],
   [U3_P1[0] + 5.08, U3_P1[1], 12.7, 2, BREAKOUT_TAIL],
   [U4_P1[0] + 5.08, U4_P1[1], 12.7, 2, BREAKOUT_TAIL],
 ]
 
-// J8 labels, left to right in the top view (pad 8 at the left, pad 1 at the right).
-const J8_LABELS = ['21', '18', '17', '16', '15', '14', 'G', '3V3']
-const J8_X0 = J8_P1X - 7 * 2.54
-const breakoutNets = (n: string) => (n === '3V3' ? 'VIN' : n)
+// J8 labels, top to bottom (pad 8 at the top).
+const J8_LABELS = ['3V3', 'G', '4', '5', '6', '7', '15', '16']
 
 export default (
   <PCB
     name="vfdclock-carrier"
-    revision="0.2"
+    revision="0.3"
     schematic={sch}
     classes={{
       sig: { width: 0.25 },
@@ -103,26 +94,44 @@ export default (
     <path layer="Edge.Cuts" d={OUTLINE} />
     {HOLES.map(([x, y], i) => <Hole ref={`H${i + 1}`} at={`${x} ${y}`} />)}
 
-    {/* ---------------------------------------------------------------- the devkit and the bus */}
-    {/* the devkit's two rows of plated holes; it is soldered straight in, USB end at the left edge */}
-    <J3 at={`${pinX(1)} ${ROW_J1_Y} 270deg`} />
-    <J4 at={`${pinX(1)} ${ROW_J3_Y} 270deg`} />
-    <U1 at={`${U1_P1[0]} ${U1_P1[1]} 90deg`} height={DIP_BODY_H} />
-    <C3 at={`${U1_P1[0] - 3.4} ${U1_P1[1] - 7.62} 270deg`} height={DISC_H} />
-    <D2 at={`${pinX(21)} 17.5 90deg`} />
-    <R_RDY1 at={`${pinX(1)} 18.2 270deg`} />
-    <R_RDY2 at={`${pinX(1) + 2.7} 18.2 270deg`} />
-    <TP3 at={`${pinX(1) + 5.9} 17.25`} />
+    {/* ---------------------------------------------------------------- the module and its support */}
+    <U5 at={`${WROOM_AT[0]} ${WROOM_AT[1]}`} />
+    <U7 at="22 6" />
+    <C5 at="15.5 6 90deg" />
+    <C6 at="28.5 6 90deg" />
+    <C9 at="45.6 7.2" />
+    <C7 at="49.3 7.2" />
+    <TP5 at="36.0 8.4" />
+    <R7 at="42.0 9.4 90deg" />
+    <C8 at="39.0 10.6" />
+    <SW1 at="33.5 3.6" />
+    <SW2 at="80.0 44.0" />
+    <TP6 at="74.2 11.3" />
+    <TP7 at="74.2 13.4" />
+    <R8 at="52.2 30.0 90deg" />
 
-    {/* ---------------------------------------------------------------- /WR buffer */}
-    <U2 at={`${U2_P1[0]} ${U2_P1[1]} 270deg`} height={DIP_BODY_H} />
-    <C4 at={`${U2_P1[0]} 33.6 180deg`} height={DISC_H} />
-    <TP4 at="89.5 34.5" />
+    {/* ---------------------------------------------------------------- USB-C, low on the left edge */}
+    <J5 at="3.0 51.0 270deg" />
+    <U6 at="13.0 59.5" />
+    <R5 at="9.5 62.5" />
+    <R6 at="11.5 43.2" />
+    <D3 at="20.0 62.5" />
+    <D2 at="26.0 62.5" />
 
-    {/* ---------------------------------------------------------------- sensors and expansion */}
+    {/* ---------------------------------------------------------------- expansion and sensors, down the left side */}
+    <J8 at={`${J8_P1[0]} ${J8_P1[1]} 180deg`} height={RA_HEADER_H} />
     <U3 at={`${U3_P1[0]} ${U3_P1[1]} 90deg`} />
     <U4 at={`${U4_P1[0]} ${U4_P1[1]} 90deg`} />
-    <J8 at={`${J8_P1X} ${HDR_Y} 270deg`} height={RA_HEADER_H} />
+
+    {/* ---------------------------------------------------------------- level shifters */}
+    <U1 at={`${U1_P1[0]} ${U1_P1[1]}`} height={DIP_BODY_H} />
+    <C3 at={`${U1_P1[0] + 10.5} ${U1_P1[1]}`} height={DISC_H} />
+    <U2 at={`${U2_P1[0]} ${U2_P1[1]}`} height={DIP_BODY_H} />
+    <C4 at={`${U2_P1[0] + 10.5} ${U2_P1[1]} 270deg`} height={DISC_H} />
+    <R_RDY1 at="91.0 30.4" />
+    <R_RDY2 at="94.6 30.4" />
+    <TP3 at="84.5 30.4" />
+    <TP4 at="85.5 42.0" />
 
     {/* ---------------------------------------------------------------- power corner */}
     {/* VFD connector beside the notch, oriented as CN4: key slot -x, pin 1 at -y, odd pins -x */}
@@ -138,52 +147,86 @@ export default (
     {TAILS.map(([x, y, w, h, height], i) => <TailBody ref={`X${i + 1}`} at={`${x} ${y}`} side="B" w={w} h={h} height={height} />)}
 
     {/* ---------------------------------------------------------------- power, drawn first */}
-    {/* V5 to U1 and the devkit: from C1 up under J2 on B.Cu, along the top edge, down to U1 */}
-    {route(C1[1]).layer('B.Cu').V(38.2).H(113.6).V(2.6).H(U1_P1[0]).Z(U1.pin('VCC')).width(0.8)}
+    {/* V5 to U1: from C1 up under J2 on B.Cu, along the top edge, down to C3 */}
+    {route(C1[1]).layer('B.Cu').V(38.2).H(113.6).V(2.6).H(U1_P1[0] + 10.5).Z(C3[1]).width(0.8)}
     {route(U1.pin('VCC')).Z(C3[1]).width(0.8)}
     {route(U1.pin('VCC')).Z(U1.pin('DIR'))}
-    {route(C3[1]).layer('F.Cu').H(pinX(21)).Z(D2.pin('A')).width(0.8)}
-    {route(D2.pin('K')).Z(J3[21]).width(0.8)}
-    {/* V5 to U2 from the zone */}
-    {route(C4[1]).Z('105.5 33.6').width(0.8)}
-    {route(C4[1]).Z(U2.pin('VCC'))}
+    {route(U2.pin('VCC')).Z(C4[1]).width(0.8)}
     {route(U2.pin('VCC')).Z(U2.pin('DIR'))}
-    {/* 3V3 from the devkit's antenna end: the RDY pull-up, then round the keep-out to the sensors and J8 */}
-    {route(J3[1]).layer('B.Cu').Z(J3[2])}
-    {route(J3[1]).Z(R_RDY1[2])}
-    {route(J3[1]).H(V33_X).V(V33_Y).H(U4_P1[0]).Z(U4[1])}
-    {route(U3[1]).V(V33_Y).Z(`${V33_X} ${V33_Y}`)}
-    {route(J8[1]).X(U3[1]).layers([...BOTH])}
+    {route(C4[1]).X(C2[1]).layers([...BOTH]).width(0.8)}
+    {route(R1[1]).Z('106.5 50.6')}
+    {route(TP1[1]).X(R1[1]).layers([...TOP])}
 
-    {/* ---------------------------------------------------------------- data bus, F.Cu */}
-    {BUS_SOCKET_PIN.map((pin, k) => route(J3[pin]).X(U1.pin(`A${8 - k}`)).layers([...TOP]))}
-    {BUS_SOCKET_PIN.map((_, k) => route(U1.pin(`B${8 - k}`)).X(J2[8 - k]).layers([...BOTH]))}
-
-    {/* /WR and RDY run right along B.Cu under the bus, and come up next to J2 */}
-    {route(J3[18]).X(U2.pin('A1')).layers([...BOTH])}
+    {/* ---------------------------------------------------------------- the display bus */}
+    {GPIO.D.map((io, k) => route(pin(io)).X(U1.pin(`A${8 - k}`)).layers([...BOTH]))}
+    {GPIO.D.map((_, k) => route(U1.pin(`B${8 - k}`)).X(J2[8 - k]).layers([...BOTH]))}
+    {route(pin(GPIO.WR)).X(U2.pin('A1')).layers([...BOTH])}
+    {route(R8[1]).X(pin(GPIO.WR)).layers([...BOTH])}
     {route(U2.pin('B1')).X(WR_VIA).layers([...BOTH])}
     {WR_VIA}
     {route(WR_VIA).X(J2[10]).layers([...TOP])}
-    {route(TP4[1]).X(U2.pin('B1')).layers([...TOP])}
-    {route(J3[19]).X(R_RDY1[1]).layers([...BOTH])}
-    {route(R_RDY1[1]).Z(R_RDY2[1])}
-    {route(R_RDY2[1]).Z(TP3[1])}
-    {route(TP3[1]).X(RDY_VIA).layers([...BOTH])}
+    {route(TP4[1]).X(U2.pin('B1')).layers([...BOTH])}
+    {route(pin(GPIO.RDY)).X(TP3[1]).layers([...BOTH])}
+    {route(TP3[1]).X(R_RDY1[1]).layers([...BOTH])}
+    {route(R_RDY1[1]).X(R_RDY2[1]).layers([...TOP])}
+    {route(R_RDY2[1]).X(RDY_VIA).layers([...BOTH])}
     {RDY_VIA}
     {route(RDY_VIA).X(J2[12]).layers([...TOP])}
 
-    {/* I2C: devkit GPIO1/2 down to the SGP40, on to the SCD-41 */}
-    {route(J4[4]).X(U3[5]).layers([...BOTH])}
-    {route(J4[5]).X(U3[4]).layers([...BOTH])}
+    {/* ---------------------------------------------------------------- module support */}
+    {route(U7.pin('VOUT')).X(C6[1]).layers([...TOP])}
+    {route(U7.pin('VOUT')).X(C9[1]).layers([...TOP])}
+    {route(C9[1]).X(C7[1]).layers([...TOP])}
+    {route(C7[1]).X(pin('3V3')).layers([...TOP])}
+    {route(R7[2]).X(pin('3V3')).layers([...TOP])}
+    {route(TP5[1]).X(R7[2]).layers([...TOP])}
+    {route(pin('EN')).X(R7[1]).layers([...TOP])}
+    {route(R7[1]).X(C8[1]).layers([...TOP])}
+    {route(C8[1]).X(SW1.A).layers([...BOTH])}
+    {/* pads of one pin, joined in copper: the buttons' two A pads, the LDO tab, USB-C's flipped D+/D- */}
+    {[SW1, SW2].map(sw => route(sw[1]).X(sw[2]).layers([...TOP]))}
+    {route(U7[2]).X(U7[4]).layers([...TOP])}
+    {route(J5['A6']).X(J5['B6']).layers([...BOTH])}
+    {route(J5['A7']).X(J5['B7']).layers([...BOTH])}
+    {route(pin(GPIO.BOOT)).X(SW2.A).layers([...BOTH])}
+    {route(pin('TXD0')).X(TP6[1]).layers([...TOP])}
+    {route(pin('RXD0')).X(TP7[1]).layers([...TOP])}
+    {route(C5[1]).X(U7.pin('VIN')).layers([...TOP])}
+
+    {/* 3V3 to the sensors, J8 and the pull-ups, on B.Cu under the lanes */}
+    {route(C6[1]).X(J8[8]).layers([...BOTH])}
+    {route(J8[8]).X(U3[1]).layers([...BOTH])}
+    {route(U3[1]).X(U4[1]).layers([...BOTH])}
+    {route(TP5[1]).X(R8[2]).layers([...BOTH])}
+    {route(R8[2]).X(R_RDY1[2]).layers([...BOTH])}
+
+    {/* ---------------------------------------------------------------- USB and the 5 V feeds */}
+    {/* through the clamp: in on pads 1 and 3, out on 6 and 4, each pair also joined under the chip */}
+    {route(J5.DP).X(U6[1]).layers([...TOP])}
+    {route(J5.DN).X(U6[3]).layers([...TOP])}
+    {route(U6[1]).Z(U6[6])}
+    {route(U6[3]).Z(U6[4])}
+    {route(U6[6]).X(pin(GPIO.USB_DP)).layers([...BOTH])}
+    {route(U6[4]).X(pin(GPIO.USB_DN)).layers([...BOTH])}
+    {route(U6.pin('GND')).X(R5[2]).layers([...TOP])}
+    {route(R5[2]).Z('10.48 64.4')}
+    {via(GND, '10.48 64.4')}
+    {route(J5['A4']).X(J5['B4']).layers([...BOTH]).width(0.8)}
+    {route(J5.CC1).X(R5[1]).layers([...BOTH])}
+    {route(J5.CC2).X(R6[1]).layers([...BOTH])}
+    {route(J5.VBUS).X(U6.pin('VBUS')).layers([...BOTH])}
+    {route(U6.pin('VBUS')).X(D3.pin('A')).layers([...BOTH])}
+    {route(D3.pin('K')).X(D2.pin('K')).layers([...TOP])}
+    {route(D2.pin('K')).X(C5[1]).layers([...BOTH])}
+    {route(D2.pin('A')).X(C4[1]).layers([...BOTH])}
+
+    {/* ---------------------------------------------------------------- I2C, expansion */}
+    {route(pin(GPIO.SDA)).X(U3[5]).layers([...BOTH])}
+    {route(pin(GPIO.SCL)).X(U3[4]).layers([...BOTH])}
     {route(U3[5]).X(U4[5]).layers([...BOTH])}
     {route(U3[4]).X(U4[4]).layers([...BOTH])}
-
-    {/* expansion: GPIO14..18 cross under the devkit, GPIO21 drops from its J3 row */}
-    {[20, 8, 9, 10, 11].map((pin, i) => route(J3[pin]).X(J8[3 + i]).layers([...BOTH]))}
-    {route(J4[18]).X(J8[8]).layers([...BOTH])}
+    {GPIO.EXP.map((io, k) => route(pin(io)).X(J8[6 - k]).layers([...BOTH]))}
     {route(R1[2]).X(D1.A).layers([...TOP])}
-    {route(R1[1]).Z('106.5 50.6')}
-    {route(TP1[1]).X(R1[1]).layers([...TOP])}
 
     {/* J2's GND return: each odd GND pad gets a 0.8 mm stub to two vias, 13 and 14 are bridged */}
     {[9, 11, 13].map(p => [
@@ -199,22 +242,11 @@ export default (
     {pour(GND, 'F.Cu', `M 0 0 H ${BOARD_W} V ${BOARD_H} H 0 Z`)}
     {pour(GND, 'B.Cu', `M 0 0 H ${BOARD_W} V ${BOARD_H} H 0 Z`)}
     {stitch(GND, { pitch: 6, padClearance: 0.5 })}
-
-    {/* keep-outs: antenna (no copper on either layer; no parts placed there), standoffs */}
-    {keepout('all', `M ${ANTENNA_KEEPOUT.x0} ${ANTENNA_KEEPOUT.y0} H ${ANTENNA_KEEPOUT.x1} V ${ANTENNA_KEEPOUT.y1} H ${ANTENNA_KEEPOUT.x0} Z`)}
     {HOLES.map(([x, y]) => keepout('all', circle(STANDOFF_CLEAR_D, x, y)))}
 
-    {/* the stack: devkit and breakouts above on their own header plastic, VFD 15 mm below on M3 standoffs */}
-    {reference('./refs/devkit/pcb.tsx', {
-      mate: [
-        { local: J3, remote: 'J1', pin: 1, nets: (n: string) => DEVKIT_NET_OF[n] ?? n },
-        { local: J4, remote: 'J3', pin: 1 },
-      ],
-      stack: 'above',
-      gap: DEVKIT_GAP,
-    })}
-    {reference('./refs/sgp40/pcb.tsx', { mate: { local: U3, remote: 'J1', pin: 1, nets: breakoutNets }, stack: 'above', gap: BREAKOUT_GAP })}
-    {reference('./refs/scd41/pcb.tsx', { mate: { local: U4, remote: 'J1', pin: 1, nets: breakoutNets }, stack: 'above', gap: BREAKOUT_GAP })}
+    {/* the stack: breakouts above on their own header plastic, VFD 15 mm below on M3 standoffs */}
+    {reference('./refs/sgp40/pcb.tsx', { mate: { local: U3, remote: 'J1', pin: 1, nets: (n: string) => (n === '3V3' ? 'VIN' : n) }, stack: 'above', gap: BREAKOUT_GAP })}
+    {reference('./refs/scd41/pcb.tsx', { mate: { local: U4, remote: 'J1', pin: 1, nets: (n: string) => (n === '3V3' ? 'VIN' : n) }, stack: 'above', gap: BREAKOUT_GAP })}
     {reference('./refs/vfd/pcb.tsx', { at: [0, 0, -(STANDOFF_LEN + VFD_THICKNESS)] })}
 
     {/* ---------------------------------------------------------------- silk: polarity, pin 1 and pin names only */}
@@ -224,12 +256,15 @@ export default (
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] - 9.9} V ${J2_AT[1] - 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] - 9.9}`} />
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] + 9.9} V ${J2_AT[1] + 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] + 9.9}`} />
     <path layer={SILK} d={`M 103.0 ${J2_PIN1_Y - 0.8} L 104.5 ${J2_PIN1_Y} L 103.0 ${J2_PIN1_Y + 0.8} Z`} fill />
-    {J8_LABELS.map((l, i) => <text layer={SILK} at={`${J8_X0 + i * 2.54} ${HDR_Y - 2.2}`} size={0.7}>{l}</text>)}
+    {J8_LABELS.map((l, i) => <text layer={SILK} at={`6.3 ${J8_P1[1] - (7 - i) * 2.54}`} size={0.7} anchor="start">{l}</text>)}
     <text layer={SILK} at="106.5 60.0" size={0.8}>5V</text>
     <text layer={SILK} at="110.5 60.0" size={0.8}>GND</text>
-    <text layer={SILK} at={`${pinX(1) + 5.9} 15.5`} size={0.8}>RDY</text>
-    <text layer={SILK} at="89.5 36.4" size={0.8}>/WR</text>
+    <text layer={SILK} at="84.5 28.6" size={0.8}>RDY</text>
+    <text layer={SILK} at="85.5 43.9" size={0.8}>/WR</text>
+    <text layer={SILK} at="36.0 10.2" size={0.8}>3V3</text>
+    <text layer={SILK} at="76.2 11.3" size={0.7} anchor="start">TX</text>
+    <text layer={SILK} at="76.2 13.4" size={0.7} anchor="start">RX</text>
     <text layer={SILK} at="124.5 41.9" size={0.9}>5V IN</text>
-    <text layer={SILK} at="113.5 64.0" size={0.9}>vfdclock r0.2</text>
+    <text layer={SILK} at="113.5 64.0" size={0.9}>vfdclock r0.3</text>
   </PCB>
 )
