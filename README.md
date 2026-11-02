@@ -136,6 +136,22 @@ JLCPCB charges a one-off fee for each extended part (about $3 each).
 
 Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's resistors are SMD, by choice), two spare 245s, the second 1000 µF can, ten spare 100 nF caps, the breadboard parts from the earlier rig, and the ESP32-S3-DevKitC-1 (the `master` board's).
 
+## Ordering from JLCPCB
+
+- **Files:** `.pcbjs/fab/vfdclock-carrier/` after `npx pcbjs build -q` on this branch. Upload the Gerber zip, then `bom.csv` and `cpl.csv` for assembly.
+- **PCB:** 2 layers, 1.6 mm, quantity 5 (JLCPCB's minimum).
+- **Assembly:** Economic, top side only, quantity 2 (JLCPCB's minimum). JLCPCB places every SMD part with an LCSC number, U5 included, so two modules are bought: one board to build, one spare.
+- **Check JLCPCB's placement preview before paying.** Rotations can differ between tools, so check:
+  - **U5:** the antenna end at the notch in the top edge.
+  - **J5:** the mouth at the left edge.
+  - **Pin 1 marks:** U6 and U7.
+  - **Polarity:** D1, D2 and D3.
+  - **Buttons:** SW1 and SW2 sit square on their pads.
+- **Not placed by JLCPCB:**
+  - **To buy:** J2 and J8, and the 4 standoffs.
+  - **Owned:** U1, U2, C1, C3, C4, J1 and the sensors.
+  - **J2's LCSC option:** JLCPCB stocks a keyed SMD box header, BH254VS-16P (C19190396). Its land pattern must be checked against J2's footprint before it goes in the BOM.
+
 ## Assembly
 
 1. **JLCPCB:** every SMD part in the table above, top side only. If you place U5 yourself instead, untick it in JLCPCB's BOM.
