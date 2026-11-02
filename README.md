@@ -115,7 +115,10 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 2. **Barrel jack.** The footprint (`lib/barrelJack.tsx`) follows the SparkFun PRT-10811 / 4UCON 18742 drawing: centre pin 13.6 mm and sleeve 7.8 mm behind the front face, switch pin 10.6 mm back and 4.8 mm to the side. It matches SparkFun's own footprint to 0.1 mm.
 3. **C3/C4 lead spacing:** 5.0 mm, from Vishay's part code (F5).
 4. **VFD SW1 No.6 = ON** (graphic DMA mode). Set it before stacking: the carrier covers the switch.
-5. **Cable:** press an IDC socket onto each end of the 16-way ribbon, both facing the same way, with the red stripe on pin 1 at both ends, then clip on the strain reliefs.
+5. **Cable:**
+   - **Markings:** J2 is printed 1 2 at its top end and 15 16 at its bottom end, odd pins on the left, as the display prints CN4.
+   - **Crimping:** crimp each IDC socket with the ribbon's red stripe at the socket's triangle (pin 1). Plug each one in with its key in the header's slot.
+   - **Check:** before plugging in the display, check with a meter that pin 1 at one end reaches pin 1 at the other, and 16 reaches 16. If pin 1 reaches any other pin, that socket is on the wrong way: mirrored if it reaches 2, end for end if it reaches 15 or 16.
 
 ## The stack and its checks
 

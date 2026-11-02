@@ -246,6 +246,12 @@ export default (
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] - 9.9} V ${J2_AT[1] - 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] - 9.9}`} />
     <path layer={SILK} d={`M ${J2_AT[0] - 4.585} ${J2_AT[1] + 9.9} V ${J2_AT[1] + 14.08} H ${J2_AT[0] + 4.585} V ${J2_AT[1] + 9.9}`} />
     <path layer={SILK} d={`M 103.0 ${J2_PIN1_Y - 0.8} L 104.5 ${J2_PIN1_Y} L 103.0 ${J2_PIN1_Y + 0.8} Z`} fill />
+    {/* J2's pin numbers as the display prints them at CN4: 1 2 over the I/O-edge end, 15 16 under the other,
+        each over its column (odd pins on the left), so the ribbon can be checked end to end */}
+    <text layer={SILK} at={`${J2_AT[0] - 3.8} ${J2_AT[1] - 15.2}`} size={0.9}>1</text>
+    <text layer={SILK} at={`${J2_AT[0] + 3.8} ${J2_AT[1] - 15.2}`} size={0.9}>2</text>
+    <text layer={SILK} at={`${J2_AT[0] - 3.8} ${J2_AT[1] + 15.05}`} size={0.9}>15</text>
+    <text layer={SILK} at={`${J2_AT[0] + 3.8} ${J2_AT[1] + 15.05}`} size={0.9}>16</text>
     {J8_LABELS.map((l, i) => <text layer={SILK} at={`${J8_X0 + i * 2.54} ${HDR_Y - 2.2}`} size={0.7}>{l}</text>)}
     <text layer={SILK} at="106.5 60.0" size={0.8}>5V</text>
     <text layer={SILK} at="110.5 60.0" size={0.8}>GND</text>
