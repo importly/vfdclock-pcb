@@ -37,7 +37,7 @@ Silk carries only polarity, pin 1, pin names and test-pad names, plus a small `v
 
 U1's channel n carries bit 8−n (A1/B1 = D7 … A8/B8 = D0). This keeps the devkit's left-to-right order on both sides of the chip, so the bus has no crossings.
 
-**J2: VFD CN4, male 2 × 8 2.54 mm SMD box header (keyed), oriented like CN4.**
+**J2: VFD CN4, XFCN BH254VS-16P, a keyed male 2 × 8 2.54 mm SMD box header. It stands like CN4: pin 1 at the top, odd pins and the key slot on the left, away from the right edge.**
 
 | Pin | Net | Pin | Net |
 | --- | --- | --- | --- |
@@ -86,7 +86,7 @@ The rule: parts already owned stay through-hole; everything bought new is SMD. "
 | U3 | 1 | Adafruit 4829, SGP40, soldered flush by its own 1 × 5 header | owned |
 | U4 | 1 | Adafruit 5190, SCD-41, soldered flush by its own 1 × 5 header | owned |
 | — | 1 | ESP32-S3-DevKitC-1 N16R8, USB-C clone, soldered by its own pins | owned |
-| J2 | 1 | 2 × 8 2.54 mm male box header, SMD, keyed | to buy (SMD) |
+| J2 | 1 | XFCN BH254VS-16P, 2 × 8 2.54 mm male box header, SMD, keyed (C19190396) | to buy (SMD) |
 | J8 | 1 | 1 × 8 2.54 mm male header, right-angle | to buy (THT) |
 | C2 | 1 | 10 µF 0805, CL21A106KAYNNNE | to buy (SMD) |
 | R1 | 1 | 1 kΩ 0805 | to buy (SMD) |
@@ -97,7 +97,7 @@ The rule: parts already owned stay through-hole; everything bought new is SMD. "
 | — | 1 | 5 V 15 W wall adapter, 5.5/2.1 plug (839-16-00119-ND) | owned |
 | — | 4 | M3 standoffs, 15 mm, with screws | to buy |
 
-The devkit and sensor rows are bare plated holes, so they are left out of `bom.csv` and `cpl.csv`. The SMD parts carry LCSC numbers, checked against JLCPCB's parts list, all JLCPCB basic parts: C2 C15850, R1 C17513, D1 C2297, D2 C8598, R_RDY1 C17414, R_RDY2 C17713. J2 has none: hand-solder it, as it has 2.54 mm pads.
+The devkit and sensor rows are bare plated holes, so they are left out of `bom.csv` and `cpl.csv`. The SMD parts carry LCSC numbers, checked against JLCPCB's parts list: C2 C15850, R1 C17513, D1 C2297, D2 C8598, R_RDY1 C17414 and R_RDY2 C17713, all basic, and J2 C19190396, extended. J2's footprint is drawn in JLCPCB's own orientation for that part, so `cpl.csv`'s 270° should need no correction. In JLCPCB's placement preview, check its key slot is on the left and pin 1 at the top by the printed 1: turned round, the cable would plug in reversed and put 5 V on the data lines.
 
 Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's resistors are SMD, by choice), two spare 245s, the second 1000 µF can, ten spare 100 nF caps, and the breadboard parts from the earlier rig.
 
