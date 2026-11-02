@@ -7,9 +7,10 @@ import { bus, nets, NC, type Net } from '@pcbjs/core'
 import { kicadFootprint, kicadModel } from '@pcbjs/kicad'
 import { C0805, LED0805, R0805, SOT223, SOT23, TactSwitch, TestPad, USBC, withPins } from '@pcbjs/lib'
 import { BarrelJack10811 } from './lib/barrelJack'
+import { BoxHeader2x08 } from './lib/boxHeader'
 import { ESP32S3Wroom1 } from './lib/esp32s3Wroom1'
 import { BreakoutRow } from './lib/headerRow'
-import { C1_HEIGHT, IDC_PITCH } from './lib/frame'
+import { C1_HEIGHT } from './lib/frame'
 import { CN4, GPIO } from './lib/pinout'
 
 // ---------------------------------------------------------------- nets
@@ -59,8 +60,6 @@ const CapRadial = kicadFootprint('Capacitor_THT:CP_Radial_D10.0mm_P5.00mm', {
 })
 const CapDisc = kicadFootprint('Capacitor_THT:C_Disc_D5.0mm_W2.5mm_P5.00mm', { silk: 'none' })
 const SOD123 = kicadFootprint('Diode_SMD:D_SOD-123', { silk: 'none', pinNames: { 1: 'K', 2: 'A' } })
-// Keyed SMD box header; the key slot is on the odd-pin (-x) side, as on the VFD's CN4.
-const BoxHeader = kicadFootprint(`Connector_IDC:IDC-Header_2x08_P${IDC_PITCH.toFixed(2)}mm_Vertical_SMD`, { prefix: 'J', silk: 'none' })
 // Right-angle 2.54 mm header at the left edge, pins out past it for Dupont leads.
 const HeaderRA8 = kicadFootprint('Connector_PinHeader_2.54mm:PinHeader_1x08_P2.54mm_Horizontal', { prefix: 'J', silk: 'none' })
 const DIP20_245 = kicadFootprint('Package_DIP:DIP-20_W7.62mm', {
@@ -164,7 +163,7 @@ export const R_RDY2 = R0805('47k').ref('R_RDY2').source({ MPN: '0805W8F4702T5E',
 
 // ---------------------------------------------------------------- connectors
 /** To VFD CN4 by a straight 16-way IDC ribbon (female-female), pin 1 to pin 1. */
-export const J2 = BoxHeader('VFD CN4 2x8 box').source({ MPN: '2x8P 2.54 SMD box header', Description: 'male shrouded IDC box header 2x8 2.54 mm SMD vertical' })
+export const J2 = BoxHeader2x08('VFD CN4 2x8 box').source({ MPN: 'BH254VS-16P', Manufacturer: 'XFCN', 'MPN:LCSC': 'C19190396', Description: 'male shrouded IDC box header 2x8 2.54 mm SMD vertical, keyed' })
   .connect(Object.fromEntries(CN4.map((n, i) => [i + 1, NET[n]])))
 
 // J8 lies on the left edge, pad 1 (square) at its bottom end. Top to bottom it reads 3V3, GND, then

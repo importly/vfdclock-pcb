@@ -50,7 +50,7 @@ The pins follow the module's pad order, so each group leaves the module on its o
 
 U1's channel n carries bit 8−n (A1/B1 = D7 … A8/B8 = D0). The bus leaves the module with D7 innermost, so it reaches U1's A column top-down D7..D0, and J2 the same way.
 
-**J2: VFD CN4, male 2 × 8 2.54 mm SMD box header (keyed), oriented like CN4.**
+**J2: VFD CN4, XFCN BH254VS-16P, a keyed male 2 × 8 2.54 mm SMD box header placed by JLCPCB. It stands like CN4: pin 1 at the top, odd pins and the key slot on the left, towards the module.**
 
 | Pin | Net | Pin | Net |
 | --- | --- | --- | --- |
@@ -117,6 +117,7 @@ The rule: parts already owned stay through-hole, and everything bought new is SM
 | U5 | ESP32-S3-WROOM-1-N16R8 | C2913202 | extended |
 | J5 | Korean Hroparts TYPE-C-31-M-12, USB-C 16-pin | C165948 | extended |
 | U6 | USBLC6-2SC6 | C7519 | extended |
+| J2 | XFCN BH254VS-16P, 2 × 8 2.54 mm SMD box header, keyed | C19190396 | extended |
 | U7 | AMS1117-3.3, SOT-223 | C6186 | basic |
 | D2, D3 | B5819W, SOD-123 | C8598 | basic |
 | SW1, SW2 | TS-1187A-B-A-B, 5.1 × 5.1 tact switch | C318884 | basic |
@@ -132,7 +133,7 @@ The rule: parts already owned stay through-hole, and everything bought new is SM
 
 JLCPCB charges a one-off fee for each extended part (about $3 each).
 
-**Hand-soldered, to buy:** J2 (2 × 8 2.54 mm male SMD box header, keyed; large pads), J8 (1 × 8 2.54 mm right-angle male header), 4 × M3 15 mm standoffs with screws.
+**Hand-soldered, to buy:** J8 (1 × 8 2.54 mm right-angle male header), 4 × M3 15 mm standoffs with screws.
 
 Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's resistors are SMD, by choice), two spare 245s, the second 1000 µF can, ten spare 100 nF caps, the breadboard parts from the earlier rig, and the ESP32-S3-DevKitC-1 (the `master` board's).
 
@@ -143,14 +144,14 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 - **Assembly:** Economic, top side only, quantity 2 (JLCPCB's minimum). JLCPCB places every SMD part with an LCSC number, U5 included, so two modules are bought: one board to build, one spare.
 - **Check JLCPCB's placement preview before paying.** Rotations can differ between tools, so check:
   - **U5:** the antenna end at the notch in the top edge.
+  - **J2:** the key slot on the left, towards the module, and pin 1 at the top by the printed 1. Turned round, the cable would plug in reversed and put 5 V on the data lines. J2's footprint is drawn in JLCPCB's own orientation for C19190396, so `cpl.csv`'s 270° should need no correction.
   - **J5:** the mouth at the left edge.
   - **Pin 1 marks:** U6 and U7.
   - **Polarity:** D1, D2 and D3.
   - **Buttons:** SW1 and SW2 sit square on their pads.
 - **Not placed by JLCPCB:**
-  - **To buy:** J2 and J8, and the 4 standoffs.
+  - **To buy:** J8 and the 4 standoffs.
   - **Owned:** U1, U2, C1, C3, C4, J1 and the sensors.
-  - **J2's LCSC option:** JLCPCB stocks a keyed SMD box header, BH254VS-16P (C19190396). Its land pattern must be checked against J2's footprint before it goes in the BOM.
 
 ## Assembly
 
@@ -158,10 +159,9 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 2. **Hand-soldering U5:**
    - The castellated pads reach 1.5 mm past the module, so a fine tip and flux reach pad and castellation together.
    - Solder the ground pad from the back, through the 1 mm hole in its centre.
-3. **J2:** SMD, but on 2.54 mm pads.
-4. **Low THT parts:** U1, U2, C3, C4, J8, J1.
-5. **The breakouts, flush on the carrier:** push each 1 × 5 header's long pins up through the carrier from underneath, so its black plastic sits under the carrier. Lay the breakout flat on top over the pins, solder the pins to the breakout on top and to the carrier underneath, then trim the pins on top. Nothing under a breakout has bare copper: the carrier's vias are tented and kept out from under it, and its tracks are under solder mask. Flush is harder to undo than on standoffs, and the SCD-41 reads the carrier's warmth a little more, so give its temperature an offset in firmware.
-6. **C1 last** (it is the tallest part); mind the + mark.
+3. **Low THT parts:** U1, U2, C3, C4, J8, J1.
+4. **The breakouts, flush on the carrier:** push each 1 × 5 header's long pins up through the carrier from underneath, so its black plastic sits under the carrier. Lay the breakout flat on top over the pins, solder the pins to the breakout on top and to the carrier underneath, then trim the pins on top. Nothing under a breakout has bare copper: the carrier's vias are tented and kept out from under it, and its tracks are under solder mask. Flush is harder to undo than on standoffs, and the SCD-41 reads the carrier's warmth a little more, so give its temperature an offset in firmware.
+5. **C1 last** (it is the tallest part); mind the + mark.
 
 ## Check before ordering
 
@@ -176,7 +176,7 @@ Owned but not on this board: the THT 10 kΩ and 20 kΩ resistors (the board's re
 
 ## The stack and its checks
 
-- `refs/sgp40` and `refs/scd41` mate on their headers (stack above, 2.5 mm), with the nets checked across each mate. Their geometry comes from Adafruit's own Eagle boards (`Adafruit-SGP40-PCB`, `Adafruit-SCD-4x-PCB`).
+- The sensor breakouts are drawn on the carrier by padless footprints with Adafruit's models (`BreakoutBody` in `pcb.tsx`); they have no reference boards.
 - `refs/vfd` sits 16.6 mm below. The breakout header tails and C1's leads under the carrier are modelled and checked against the display's rear parts.
 - **3D view:**
   - **Sensor boards:** Adafruit's own models (Adafruit_CAD_Parts, MIT), on KiCad header models.

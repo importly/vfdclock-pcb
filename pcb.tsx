@@ -20,6 +20,7 @@ import {
 } from './lib/frame'
 import { GPIO, WROOM_PADS } from './lib/pinout'
 import { JACK_FRONT } from './lib/barrelJack'
+import { BOX_ROW } from './lib/boxHeader'
 import { VFD_VISUAL } from './lib/vfdVisual'
 
 // ---------------------------------------------------------------- outline: VFD size, antenna notch at the top, CN4 notch at the right
@@ -169,7 +170,7 @@ export default (
 
     {/* ---------------------------------------------------------------- power corner */}
     {/* VFD connector beside the notch, oriented as CN4: key slot -x, pin 1 at -y, odd pins -x */}
-    <J2 at={`${J2_AT[0]} ${J2_AT[1]}`} thermal={{ 9: 'solid', 11: 'solid', 13: 'solid', 14: 'solid' }} />
+    <J2 at={`${J2_AT[0]} ${J2_AT[1]} 270deg`} thermal={{ 9: 'solid', 11: 'solid', 13: 'solid', 14: 'solid' }} />
     <C1 at={`${C1_C[0] - 2.5} ${C1_C[1]}`} height={C1_HEIGHT} />
     <C2 at="104.3 38.5 180deg" />
     {/* barrel jack, opening on the right edge */}
@@ -308,10 +309,10 @@ export default (
     <path layer={SILK} d={`M 103.0 ${J2_PIN1_Y - 0.8} L 104.5 ${J2_PIN1_Y} L 103.0 ${J2_PIN1_Y + 0.8} Z`} fill />
     {/* J2's pin numbers as the display prints them at CN4: 1 2 over the I/O-edge end, 15 16 under the other,
         each over its column (odd pins on the left), so the ribbon can be checked end to end */}
-    <text layer={SILK} at={`${J2_AT[0] - 3.8} ${J2_AT[1] - 15.2}`} size={0.9}>1</text>
-    <text layer={SILK} at={`${J2_AT[0] + 3.8} ${J2_AT[1] - 15.2}`} size={0.9}>2</text>
-    <text layer={SILK} at={`${J2_AT[0] - 3.8} ${J2_AT[1] + 15.05}`} size={0.9}>15</text>
-    <text layer={SILK} at={`${J2_AT[0] + 3.8} ${J2_AT[1] + 15.05}`} size={0.9}>16</text>
+    <text layer={SILK} at={`${J2_AT[0] - BOX_ROW} ${J2_AT[1] - 15.2}`} size={0.9}>1</text>
+    <text layer={SILK} at={`${J2_AT[0] + BOX_ROW} ${J2_AT[1] - 15.2}`} size={0.9}>2</text>
+    <text layer={SILK} at={`${J2_AT[0] - BOX_ROW} ${J2_AT[1] + 15.05}`} size={0.9}>15</text>
+    <text layer={SILK} at={`${J2_AT[0] + BOX_ROW} ${J2_AT[1] + 15.05}`} size={0.9}>16</text>
     {J8_LABELS.map((l, i) => <text layer={SILK} at={`${J8_P1[0] + 1.45} ${J8_P1[1] - (7 - i) * 2.54}`} size={0.7} anchor="start">{l}</text>)}
     <text layer={SILK} at="106.5 60.0" size={0.8}>5V</text>
     <text layer={SILK} at="110.5 60.0" size={0.8}>GND</text>
